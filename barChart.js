@@ -33,22 +33,20 @@ function barChart() {
                 .attr('width', width)
                 .style('fill', fillColor);
 
-			var xScale = d3.scale.linear()
+			var xScale = d3.scaleLinear()
 				.domain([0, data.length])
                 .range([0, width]);
 
-			var yScale = d3.scale.linear()
+			var yScale = d3.scaleLinear()
 				.domain([0, maxValue])
                 .range([0, height]);
 			
-			var xAxis = d3.svg.axis()
+			var xAxis = d3.axisBottom()
                 .scale(xScale)
-				.orient("bottom")
                 .ticks(0);
 
-			var yAxis = d3.svg.axis()
+			var yAxis = d3.axisRight()
 				.scale(yScale)
-				.orient("right")
 				.ticks(0);
 			
 
@@ -139,7 +137,7 @@ function barChart() {
                 maxValue = d3.max(data);
                 heightScale = height / (maxValue + 10);
 
-                //yScale = d3.scale.linear()
+                //yScale = d3.scaleLinear()
                 //    .domain([0, maxValue])
                 //    .range([0, height]);
 

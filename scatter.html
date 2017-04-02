@@ -32,7 +32,7 @@
 </style>
 
 <body>
-    <script src="../d3.v3/d3.v3.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
     <script>
     var margin = {
             top: 20,
@@ -43,21 +43,19 @@
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
 
-    var x = d3.scale.linear()
+    var x = d3.scaleLinear()
         .range([0, width]);
 
-    var y = d3.scale.linear()
+    var y = d3.scaleLinear()
         .range([height, 0]);
 
-    var xAxis = d3.svg.axis()
+    var xAxis = d3.axisBottom()
         .scale(x)
-        .ticks(0)
-        .orient("bottom");
+        .ticks(0);
 
-    var yAxis = d3.svg.axis()
+    var yAxis = d3.axisLeft()
         .scale(y)
-        .ticks(0)
-        .orient("left");
+        .ticks(0);
 
 
     var svg = d3.select("body").append("svg")
@@ -82,7 +80,7 @@
         d.yhat = +d.yhat;
     });
 
-    var line = d3.svg.line()
+    var line = d3.line()
         .x(function(d) {
             return x(d.x);
         })

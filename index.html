@@ -42,7 +42,7 @@ var path = d3.geoPath();
 
 d3.queue()
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
-    .defer(d3.csv, "test_data.csv", function(d) { heatmap.set(d.id, +d.value); })
+    .defer(d3.csv, "data.csv", function(d) { heatmap.set(d.geoid, +d.population); })
     .await(ready);
 
 var x = d3.scaleLinear()
@@ -94,13 +94,13 @@ function ready(error, us) {
     .selectAll("path")
     .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
-      .attr("fill", function(d) { return color(d.value = heatmap.get(d.id)); })
+      .attr("fill", function(d) { d.value = heatmap.get(d.id); if(d.value != null) { return color(d.value); } else { return "grey"; }})
       .attr("d", path)
 	  .on("click", function(d) { document.getElementById("svg").style.visibility = "hidden";
 								 var map = document.getElementById("map");
 								 map.innerHTML = "<br/><img src='indiana.png'></img>"; })
     .append("title")
-      .text(function(d) { return d.value; });
+      .text(function(d) { if(d.value != null) { return d.value; } else { return "No data available."; } });
 
   svg.append("path")
       .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))

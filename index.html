@@ -36,9 +36,14 @@ var svg = d3.select("#svg"),
     width = +svg.attr("width"),
     height = +svg.attr("height");
 
-var demographic = d3.map();
+var heatmap = d3.map();
 
 var path = d3.geoPath();
+
+d3.queue()
+    .defer(d3.json, "https://d3js.org/us-10m.v1.json")
+    .defer(d3.csv, "test_data.csv", function(d) { heatmap.set(d.id, +d.value); })
+    .await(ready);
 
 var x = d3.scaleLinear()
     .domain([1, 10])
@@ -46,7 +51,7 @@ var x = d3.scaleLinear()
 
 var color = d3.scaleThreshold()
     .domain(d3.range(1, 10))
-    .range(d3.schemeRdBu[9].reverse());
+    .range(d3.schemePRGn[9].reverse());
 
 var g = svg.append("g")
     .attr("class", "key")
@@ -81,11 +86,6 @@ g.call(d3.axisBottom(x)
   .select(".domain")
     .remove();
 
-d3.queue()
-    .defer(d3.json, "https://d3js.org/us-10m.v1.json")
-    .defer(d3.csv, "test_data.csv", function(d) { demographic.set(d.id, +d.value); })
-    .await(ready);
-
 function ready(error, us) {
   if (error) throw error;
 
@@ -94,7 +94,7 @@ function ready(error, us) {
     .selectAll("path")
     .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
-      .attr("fill", function(d) { return color(d.value = demographic.get(d.id)); })
+      .attr("fill", function(d) { return color(d.value = heatmap.get(d.id)); })
       .attr("d", path)
 	  .on("click", function(d) { document.getElementById("svg").style.visibility = "hidden";
 								 var map = document.getElementById("map");

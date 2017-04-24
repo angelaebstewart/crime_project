@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Bar Chart</title>
-    <script src="../d3.v3/d3.v3.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="barChart.js"></script>
     <style>
         div {
@@ -14,9 +14,13 @@
 <body>
     <div id="updatableChart"></div>
     <script>
+        var inputData = [{'label' : 'label1', 'value' : 37}, 
+            {'label' : 'label2', 'value' : 12}, 
+            {'label' : 'label3', 'value' : 17}, 
+            {'label' : 'label4', 'value' : 22}, 
+            {'label' : 'label5', 'value' : 12}];
+
         
-        //var dataSet = [];
-        var inputData = [37, 12, 17, 22, 12];
         //var lowTemperatures = dataSet[1] = highTemperatures.map(function(d) { return d - Math.random() * 30});
         //var milesRun = dataSet[2] = [2, 5, 4, 3, 1, 2, 1];
         //var fillColors = ['coral', 'steelblue', 'teal'];

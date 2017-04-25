@@ -10,10 +10,23 @@ var heatmap = d3.map();
 
 var path = d3.geoPath();
 
+var json = [];
+;
+
 d3.queue()
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
-    .defer(d3.csv, "data.csv", function(d) { if(d.population > max) { max = d.population; } heatmap.set(d.geoid, +d.population); })
+    .defer(d3.csv, "data.csv", function(d) { json.push({"geoid": d.geoid, "agency": d.agency, "state": d.state, "population": d.population}); if(d.population > max) { max = d.population; } heatmap.set(d.geoid, +d.population); })
     .await(ready);
+
+var geoid_map = {};
+var i = null;
+for (i = 0; json.length > i; i += 1) {
+    geoid_map[json[i].geoid] = json[i];
+}
+ 
+function get_geoid(geoid) {
+    return geoid_map[geoid];
+}
 
 var x = d3.scaleLinear()
     .domain([1, 10])
@@ -67,13 +80,28 @@ function ready(error, us) {
       .attr("fill", function(d) { d.value = heatmap.get(d.id); if(d.value != null) { return color((d.value / max) * 10); } else { return "grey"; }})
 	  .on("mouseover", function() { d3.select(this).attr("fill", "yellow"); })
 	  .on("mouseout", function(d) { if(d.value != null) { d3.select(this).attr("fill", color((d.value / max) * 10)); } else { d3.select(this).attr("fill", "grey"); }})
-      //.on("click", clicked)
+      .on("click", function(d) { for(var j = 0; j < json.length; j++) { 
+			  						if(json[j].geoid == d.id) {
+										var data = json[j];
+										var info = data.agency + ", " + data.state + "\nPopulation: " + data.population;
+										info.concat(data.agency);//.concat(", ").concat(data.state));
+			  							console.log(info); 
+									}
+	  							} 
+	  						})
       .attr("d", path)
 	//.on("click", function(d) { document.getElementById("svg").style.visibility = "hidden";
 	//							 var map = document.getElementById("map");
 	//							 map.innerHTML = "<br/><img src='indiana.png'></img>"; })
     .append("title")
-      .text(function(d) { if(d.value != null) { return d.value; } else { return "No data available."; } });
+      .text(function(d) { var info; var data; 
+			  				for(var j = 0; j < json.length; j++) { 
+			  					if(json[j].geoid == d.id) {
+									data = json[j];
+								} 
+	  						}
+						if(d.value != null) {info = data.agency + " COUNTY, " + data.state + "\nPopulation: " + data.population; return info; } 
+	  					else { return "No data available."; } });
 
   svg.append("path")
       .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))

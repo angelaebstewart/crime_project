@@ -4,13 +4,15 @@ var svg = d3.select("#svg"),
 
 var centered;
 
+var max = 0;
+
 var heatmap = d3.map();
 
 var path = d3.geoPath();
 
 d3.queue()
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
-    .defer(d3.csv, "data.csv", function(d) { heatmap.set(d.geoid, +d.population); })
+    .defer(d3.csv, "data.csv", function(d) { if(d.population > max) { max = d.population; } heatmap.set(d.geoid, +d.population); })
     .await(ready);
 
 var x = d3.scaleLinear()
@@ -62,7 +64,9 @@ function ready(error, us) {
     .selectAll("path")
     .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
-      .attr("fill", function(d) { d.value = heatmap.get(d.id); if(d.value != null) { return color(d.value % 10); } else { return "grey"; }})
+      .attr("fill", function(d) { d.value = heatmap.get(d.id); if(d.value != null) { return color((d.value / max) * 10); } else { return "grey"; }})
+	  .on("mouseover", function() { d3.select(this).attr("fill", "yellow"); })
+	  .on("mouseout", function(d) { if(d.value != null) { d3.select(this).attr("fill", color((d.value / max) * 10)); } else { d3.select(this).attr("fill", "grey"); }})
       //.on("click", clicked)
       .attr("d", path)
 	//.on("click", function(d) { document.getElementById("svg").style.visibility = "hidden";

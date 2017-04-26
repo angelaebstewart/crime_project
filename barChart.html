@@ -14,7 +14,8 @@
 <body>
     <div id="updatableChart"></div>
     <script>
-        var inputData = [{'label' : 'label1', 'value' : 37}, 
+        var dataSet = [];
+        var inputData = dataSet[0] = [{'label' : 'label1', 'value' : 37}, 
             {'label' : 'label2', 'value' : 12}, 
             {'label' : 'label3', 'value' : 17}, 
             {'label' : 'label4', 'value' : 22}, 
@@ -22,7 +23,16 @@
 
         
         //var lowTemperatures = dataSet[1] = highTemperatures.map(function(d) { return d - Math.random() * 30});
-        //var milesRun = dataSet[2] = [2, 5, 4, 3, 1, 2, 1];
+        var milesRun = dataSet[1] = [{'label' : 'labelA', 'value' : 32}, 
+            {'label' : 'labelB', 'value' : 12},
+            {'label' : 'labelC', 'value' : 68},
+            {'label' : 'labelD', 'value' : 17},
+            {'label' : 'labelE', 'value' : 1},
+            {'label' : 'labelF', 'value' : 42},
+            {'label' : 'labelG', 'value' : 50},
+            {'label' : 'labelH', 'value' : 3},
+            {'label' : 'labelI', 'value' : 9},
+            {'label' : 'labelJ', 'value' : 82}];
         //var fillColors = ['coral', 'steelblue', 'teal'];
         
         var updatableChart = barChart().width(800).height(450).data(inputData); //change width and height here
@@ -31,13 +41,21 @@
             .call(updatableChart);
 
 
+        //alert("about to change Chart");
 
-        //var i = 1;
-        //window.setInterval(function() {
-        //    updatableChart.data(dataSet[i]); //cycle through the data
-        //    updatableChart.fillColor('coral');
-        //    i = (i+1) % 3 ;
-        //}, 2500);
+
+        //updatableChart.data(milesRun);
+
+        //alert("about to change again");
+
+        //updatableChart.data(inputData);
+        var i = 1;
+        window.setInterval(function() {
+            //alert(i);
+            updatableChart.data(dataSet[i]); //cycle through the data
+            //updatableChart.fillColor('coral');
+            i = (i+1)%2;
+        }, 2000);
 
     </script>
 </body>

@@ -167,6 +167,25 @@ function barChart() {
 
                 //alert(dataVals);
                 //alert(labelVals);
+
+
+                svg.selectAll('text.bar-label')
+                    .data(data)
+                    .transition()
+                    .duration(1000)
+                    .attr('x', function(d, i) { return margin.left + ((i * barPadding) + (i * barWidth) + (barWidth / 2))})
+                    .text(function(d){ return d.label; });
+                    /*.enter()
+                    .append("text")
+                    .attr("class", "bar-label")
+                    .attr("fill", "black")
+                    .attr("x", function(d, i) { return margin.left + ((i * barPadding) + (i * barWidth) + (barWidth / 2))})
+                    .attr("y", height + 10)
+                    .attr("text-anchor", "middle")
+                    .attr("dy", ".35em") //vertical align middle
+                    .text(function(d){ return d.label; });*/
+
+
                 update
                     .transition()
                     .duration(1000)

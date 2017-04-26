@@ -2,7 +2,18 @@ var svg = d3.select("#svg"),
     width = +svg.attr("width"),
     height = +svg.attr("height");
 
-var centered;
+var borderPath = svg.append("rect")
+       			.attr("x", 0)
+       			.attr("y", 0)
+       			.attr("height", 600)
+       			.attr("width", 960)
+       			.style("stroke", "black")
+       			.style("fill", "none")
+       			.style("stroke-width", 2);
+
+var clicked = 2;
+
+var selected = "";
 
 var max = 0;
 
@@ -77,13 +88,26 @@ function ready(error, us) {
 
   svg.append("g")
       .call(zoom)
+	  /*.call(d3.zoom().on("zoom", function () {
+    		svg.attr("transform", d3.event.transform)
+ 		}))*/
       .attr("class", "counties")
+	  .attr("border", 1)
     .selectAll("path")
     .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
       .attr("fill", function(d) { d.value = heatmap.get(d.id); if(d.value != null) { return color((d.value / max) * 10); } else { return "grey"; }})
-	  .on("mouseover", function() { d3.select(this).attr("fill", "yellow"); })
-	  .on("mouseout", function(d) { if(d.value != null) { d3.select(this).attr("fill", color((d.value / max) * 10)); } else { d3.select(this).attr("fill", "grey"); }})
+	  .on("mouseover", function(d) { selected = d.id; })
+	  //.on("mouseout", function(d) { if(d.value != null) { d3.select(this).attr("fill", color((d.value / max) * 10)); } else { d3.select(this).attr("fill", "grey"); }})
+	  .on("click", function(d) { var obj = d3.select(this); clicked++;
+			  if(obj.attr("fill") == "yellow") { 
+			      obj.attr("fill", function (d) { 
+					if(d.value != null) {
+					  return color((d.value / max) * 10); 
+					} 
+					else { return "grey"; } 
+				  }); }
+			  else { d3.select(this).attr("fill", "yellow"); }})
       .attr("d", path)
     .append("title")
       .text(function(d) { var info; var data; 
@@ -92,7 +116,7 @@ function ready(error, us) {
 			data = json[j];
 			} 
 	  	}
-		if(d.value != null) {info = data.agency + " COUNTY, " + data.state + "\nPopulation: " + data.population; return info; } 
+		if(d.value != null) {info = data.agency + ", " + data.state + "\nPopulation: " + data.population; return info; } 
 	  	else { return "No data available."; } });
 
   svg.append("path")
@@ -104,29 +128,4 @@ function ready(error, us) {
 
 function zoomed() {
   svg.attr("transform", d3.event.transform);
-}
-
-function clicked(d) {
-  var x, y, k;
-
-  if (d && centered !== d) {
-    var centroid = path.centroid(d);
-    x = centroid[0];
-    y = centroid[1];
-    k = 4;
-    centered = d;
-  } else {
-    x = width / 2;
-    y = height / 2;
-    k = 1;
-    centered = null;
-  }
-
-  g.selectAll("path")
-      .classed("active", centered && function(d) { return d === centered; });
-
-  g.transition()
-      .duration(750)
-      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-      .style("stroke-width", 1.5 / k + "px");
 }

@@ -10,8 +10,11 @@ var heatmap = d3.map();
 
 var path = d3.geoPath();
 
+var zoom = d3.zoom()
+    .scaleExtent([1, 2.25])
+    .on("zoom", zoomed);
+
 var json = [];
-;
 
 d3.queue()
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
@@ -73,6 +76,7 @@ function ready(error, us) {
   if (error) throw error;
 
   svg.append("g")
+      .call(zoom)
       .attr("class", "counties")
     .selectAll("path")
     .data(topojson.feature(us, us.objects.counties).features)
@@ -80,28 +84,16 @@ function ready(error, us) {
       .attr("fill", function(d) { d.value = heatmap.get(d.id); if(d.value != null) { return color((d.value / max) * 10); } else { return "grey"; }})
 	  .on("mouseover", function() { d3.select(this).attr("fill", "yellow"); })
 	  .on("mouseout", function(d) { if(d.value != null) { d3.select(this).attr("fill", color((d.value / max) * 10)); } else { d3.select(this).attr("fill", "grey"); }})
-      .on("click", function(d) { for(var j = 0; j < json.length; j++) { 
-			  						if(json[j].geoid == d.id) {
-										var data = json[j];
-										var info = data.agency + ", " + data.state + "\nPopulation: " + data.population;
-										info.concat(data.agency);//.concat(", ").concat(data.state));
-			  							console.log(info); 
-									}
-	  							} 
-	  						})
       .attr("d", path)
-	//.on("click", function(d) { document.getElementById("svg").style.visibility = "hidden";
-	//							 var map = document.getElementById("map");
-	//							 map.innerHTML = "<br/><img src='indiana.png'></img>"; })
     .append("title")
       .text(function(d) { var info; var data; 
-			  				for(var j = 0; j < json.length; j++) { 
-			  					if(json[j].geoid == d.id) {
-									data = json[j];
-								} 
-	  						}
-						if(d.value != null) {info = data.agency + " COUNTY, " + data.state + "\nPopulation: " + data.population; return info; } 
-	  					else { return "No data available."; } });
+	      for(var j = 0; j < json.length; j++) { 
+		  if(json[j].geoid == d.id) {
+			data = json[j];
+			} 
+	  	}
+		if(d.value != null) {info = data.agency + " COUNTY, " + data.state + "\nPopulation: " + data.population; return info; } 
+	  	else { return "No data available."; } });
 
   svg.append("path")
       .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
@@ -110,6 +102,9 @@ function ready(error, us) {
 	  .on("click", function() { alert("Border clicked. Please click on inside the state."); });
 }
 
+function zoomed() {
+  svg.attr("transform", d3.event.transform);
+}
 
 function clicked(d) {
   var x, y, k;

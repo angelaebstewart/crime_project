@@ -11,36 +11,31 @@ var borderPath = svg.append("rect")
        			.style("fill", "none")
        			.style("stroke-width", 2);
 
-var clicked = 2;
+
+var clicked = 0;
+var context = 0;
 
 var selected = "";
 
 var max = 0;
+
+var min = 999999999;
 
 var heatmap = d3.map();
 
 var path = d3.geoPath();
 
 var zoom = d3.zoom()
-    .scaleExtent([1, 2.25])
+	.duration(750)
+    .scaleExtent([1, 2])
     .on("zoom", zoomed);
 
 var json = [];
 
 d3.queue()
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
-    .defer(d3.csv, "data.csv", function(d) { json.push({"geoid": d.geoid, "agency": d.agency, "state": d.state, "population": d.population}); if(d.population > max) { max = d.population; } heatmap.set(d.geoid, +d.population); })
+    .defer(d3.csv, "data.csv", function(d) { json.push({"geoid": d.geoid, "agency": d.agency, "state": d.state, "population": d.population}); if(d.population > max) { max = d.population; } if(d.population < min) { min = d.population; } heatmap.set(d.geoid, +d.population); })
     .await(ready);
-
-var geoid_map = {};
-var i = null;
-for (i = 0; json.length > i; i += 1) {
-    geoid_map[json[i].geoid] = json[i];
-}
- 
-function get_geoid(geoid) {
-    return geoid_map[geoid];
-}
 
 var x = d3.scaleLinear()
     .domain([1, 10])
@@ -69,17 +64,22 @@ g.selectAll("rect")
 
 g.append("text")
     .attr("class", "caption")
+	.attr("id", "map_caption")
     .attr("x", x.range()[0])
     .attr("y", -6)
     .attr("fill", "#000")
     .attr("text-anchor", "start")
     .attr("font-weight", "bold")
-    .text("Urban/Rural Counties");
+    .text("Population of US Counties");
+
+var max_scale = d3.scaleLinear()
+				.domain(d3.range(0, max));
 
 g.call(d3.axisBottom(x)
     .tickSize(13)
     .tickFormat(function(x, i) { return i ? x : x; })
     .tickValues(color.domain()))
+    //.tickValues([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]))
   .select(".domain")
     .remove();
 
@@ -87,7 +87,7 @@ function ready(error, us) {
   if (error) throw error;
 
   svg.append("g")
-      .call(zoom)
+      .call(zoom).on("wheel.zoom", null)
 	  /*.call(d3.zoom().on("zoom", function () {
     		svg.attr("transform", d3.event.transform)
  		}))*/
@@ -99,7 +99,7 @@ function ready(error, us) {
       .attr("fill", function(d) { d.value = heatmap.get(d.id); if(d.value != null) { return color((d.value / max) * 10); } else { return "grey"; }})
 	  .on("mouseover", function(d) { selected = d.id; })
 	  //.on("mouseout", function(d) { if(d.value != null) { d3.select(this).attr("fill", color((d.value / max) * 10)); } else { d3.select(this).attr("fill", "grey"); }})
-	  .on("click", function(d) { var obj = d3.select(this); clicked++;
+	  .on("click", function(d) { var obj = d3.select(this);
 			  if(obj.attr("fill") == "yellow") { 
 			      obj.attr("fill", function (d) { 
 					if(d.value != null) {
@@ -108,6 +108,7 @@ function ready(error, us) {
 					else { return "grey"; } 
 				  }); }
 			  else { d3.select(this).attr("fill", "yellow"); }})
+	  .on("dblclick", function() { clicked++; })
       .attr("d", path)
     .append("title")
       .text(function(d) { var info; var data; 
@@ -127,5 +128,11 @@ function ready(error, us) {
 }
 
 function zoomed() {
-  svg.attr("transform", d3.event.transform);
+  if(clicked % 2 == 0) {
+  	svg.attr("transform", "");
+
+  }
+  else {
+  	svg.attr("transform", d3.event.transform);
+  }
 }

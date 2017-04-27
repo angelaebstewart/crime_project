@@ -2,18 +2,7 @@ var svg = d3.select("#svg"),
     width = +svg.attr("width"),
     height = +svg.attr("height");
 
-var borderPath = svg.append("rect")
-       			.attr("x", 0)
-       			.attr("y", 0)
-       			.attr("height", 600)
-       			.attr("width", 960)
-       			.style("stroke", "black")
-       			.style("fill", "none")
-       			.style("stroke-width", 2);
-
-
 var clicked = 0;
-var context = 0;
 
 var selected = "";
 
@@ -27,14 +16,17 @@ var path = d3.geoPath();
 
 var zoom = d3.zoom()
 	.duration(750)
-    .scaleExtent([1, 2])
+    .scaleExtent([1, 3])
     .on("zoom", zoomed);
 
 var json = [];
 
 d3.queue()
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
-    .defer(d3.csv, "data.csv", function(d) { json.push({"geoid": d.geoid, "agency": d.agency, "state": d.state, "population": d.population}); if(d.population > max) { max = d.population; } if(d.population < min) { min = d.population; } heatmap.set(d.geoid, +d.population); })
+    .defer(d3.csv, "data.csv", function(d) { 
+		  json.push({"geoid": d.geoid, "agency": d.agency, "state": d.state, "population": d.population}); 
+		  if(d.population > max) { max = d.population; } if(d.population < min) { min = d.population; } heatmap.set(d.geoid, +d.population); 
+		})
     .await(ready);
 
 var x = d3.scaleLinear()
@@ -72,9 +64,6 @@ g.append("text")
     .attr("font-weight", "bold")
     .text("Population of US Counties");
 
-var max_scale = d3.scaleLinear()
-				.domain(d3.range(0, max));
-
 g.call(d3.axisBottom(x)
     .tickSize(13)
     .tickFormat(function(x, i) { return i ? x : x; })
@@ -88,27 +77,38 @@ function ready(error, us) {
 
   svg.append("g")
       .call(zoom).on("wheel.zoom", null)
-	  /*.call(d3.zoom().on("zoom", function () {
-    		svg.attr("transform", d3.event.transform)
- 		}))*/
       .attr("class", "counties")
 	  .attr("border", 1)
     .selectAll("path")
     .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
       .attr("fill", function(d) { d.value = heatmap.get(d.id); if(d.value != null) { return color((d.value / max) * 10); } else { return "grey"; }})
-	  .on("mouseover", function(d) { selected = d.id; })
-	  //.on("mouseout", function(d) { if(d.value != null) { d3.select(this).attr("fill", color((d.value / max) * 10)); } else { d3.select(this).attr("fill", "grey"); }})
+	  //.on("mouseover", function(d) { selected = d.id; })
 	  .on("click", function(d) { var obj = d3.select(this);
-			  if(obj.attr("fill") == "yellow") { 
-			      obj.attr("fill", function (d) { 
-					if(d.value != null) {
-					  return color((d.value / max) * 10); 
-					} 
-					else { return "grey"; } 
-				  }); }
-			  else { d3.select(this).attr("fill", "yellow"); }})
-	  .on("dblclick", function() { clicked++; })
+	    if(obj.attr("fill") == "yellow") {
+                obj.attr("id", "");
+	        obj.attr("fill", function (d) { 
+		if(d.value != null) {
+		  return color((d.value / max) * 10); 
+		} 
+		else { return "grey"; } 
+		}); }
+	    else { 
+                var curr = document.getElementById("selected"); 
+                if(curr != null) { curr.setAttribute("fill", selected); curr.setAttribute("id", ""); }
+                obj.attr("id", "selected"); selected = d3.select(this).attr("fill"); d3.select(this).attr("fill", "yellow"); }})
+	  .on("dblclick", function() { clicked++; //var state;
+		/*for(var j = 0; j < json.length; j++) { 
+		  if(json[j].geoid == d.id) {
+			state = json[j].state;
+			}
+		}
+		for(var j = 0; j < json.length; j++) { 
+		  if(json[j].state == state) {
+			d3.select("#" + json[j].geoid).attr("border", 2);
+			}
+		}*/
+	  })
       .attr("d", path)
     .append("title")
       .text(function(d) { var info; var data; 
@@ -128,7 +128,7 @@ function ready(error, us) {
 }
 
 function zoomed() {
-  if(clicked % 2 == 0) {
+  if(clicked % 3 == 0) {
   	svg.attr("transform", "");
 
   }
@@ -136,3 +136,4 @@ function zoomed() {
   	svg.attr("transform", d3.event.transform);
   }
 }
+// vim: tabstop=8 shiftwidth=4 softtabstop=4 expandtab shiftround autoindent

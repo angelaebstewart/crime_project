@@ -56,7 +56,6 @@ g.selectAll("rect")
 
 g.append("text")
     .attr("class", "caption")
-	.attr("id", "map_caption")
     .attr("x", x.range()[0])
     .attr("y", -6)
     .attr("fill", "#000")
@@ -66,9 +65,9 @@ g.append("text")
 
 g.call(d3.axisBottom(x)
     .tickSize(13)
-    .tickFormat(function(x, i) { return i ? x : x; })
-    .tickValues(color.domain()))
-    //.tickValues([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]))
+    .tickFormat(function(x, i) { return x; })
+    //.tickValues(color.domain()))
+    .tickValues([1, 2, 3, 4, 5, 6, 7, 8, 9]))
   .select(".domain")
     .remove();
 

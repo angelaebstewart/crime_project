@@ -1,50 +1,28 @@
-var nationalData = [];
+var nationalData = {};
 var countyData = {};
 
-var Labels = {
-  MURDER: "Murder and nonnegligent manslaughter",
-  LEGACY_RAPE: "Legacy rape",
-  REVISED_RAPE: "Revised rape",
-  ROBBERY: "Robbery",
-  ASSAULT: "Aggravated assault",
-  BURGLARY: "Burglary",
-  LARCENY: "Larceny-theft",
-  MOTOR_VEHICLE: "Motor vehicle theft",
-};
-
 var CrimeLabels = {
-  VIOLENT_CRIME_TOTAL: "Violent crime total",
-  MURDER: "Murder and nonnegligent manslaughter",
-  LEGACY_RAPE: "Legacy rape",
-  REVISED_RAPE: "Revised rape",
+  MURDER: "Murder",
+  RAPE: "Rape",
   ROBBERY: "Robbery",
-  ASSAULT: "Aggravated assault",
-  PROPERTY_CRIME_TOTAL: "Property crime total",
+  ASSAULT: "Aggravated Assault",
   BURGLARY: "Burglary",
-  LARCENY: "Larceny-theft",
-  MOTOR_VEHICLE: "Motor vehicle theft",
-  VIOLENT_CRIME_RATE: "Violent Crime rate",
-  MURDER_RATE: "Murder and nonnegligent manslaughter rate",
-  LEGACY_RAPE_RATE: "Legacy rape rate",
-  REVISED_RAPE_RATE: "Revised rape rate",
-  ROBBERY_RATE: "Robbery rate",
-  ASSAULT_RATE: "Aggravated assault rate",
-  PROPERTY_CRIME_RATE: "Property crime rate",
-  BURGLARY_RATE: "Burglary rate",
-  LARCENY: "Larceny-theft rate",
-  MOTOR_VEHICLE_RATE: "Motor vehicle theft rate"
+  LARCENY: "Larceny-Theft",
+  VEHICLE: "Motor Vehicle Theft",
 };
 
 // ------------Crime Rate Functions----------------
 function getCounty(county){
   //return the following object:
   /*
-    geoid:
+    "geoid":
     {
-      "id": #####,
-      "name": "String"
+      "geoid": #####,
+      "state": "String"
+      "abbreviation": "String"
 
-      "population": ###,
+      "population": ####,
+
       "male": #.##,
       "female": #.##,
 
@@ -70,7 +48,7 @@ function getCounty(county){
       "vehicle": #.##
     }
   */
-  //return the crime rate of a given county and crime
+  //return the crime rante of a given county and crime
 
   var countyObject = countyData[county];
   return countyObject;
@@ -78,10 +56,10 @@ function getCounty(county){
 
 function getCounties(state){
   //return an an array of each county in a given state
-
+  counties = [];
   //will need to do a for loop for each county in a given state
-  var state = countyData.filter(obj => obj['state'] == state);
-  return state;
+  //var state = countyData.filter(obj => obj['state'] == state);
+  return counties;
 }
 
 function getCounties(){
@@ -90,13 +68,15 @@ function getCounties(){
 }
 
 //county crime data
-d3.csv("MegaFile.csv", function(data) {
-  data.forEach(function(d) {
-    var geoid = d['geoid'];
-    var county = JSON.parse(JSON.stringify(d));
-    countyData[geoid] = county;
-  });
-  
-  county = getCounty("1001");
-  window.alert(county['name']);
+d3.json("countyData.json", function(data) {
+  countyData = data;
+  county = countyData["1001"];
+  window.alert(county["county"]+"\'s population is "+county["population"]);
+});
+
+//national data with states and US total
+d3.json("nationalData.json", function(data) {
+  nationalData = data;
+  state = nationalData["AL"];
+  window.alert(state["state"]+"\'s population is "+state["population"]);
 });

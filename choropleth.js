@@ -20,12 +20,14 @@ var zoom = d3.zoom()
     .on("zoom", zoomed);
 
 var json = [];
+var acc = 0;
 
 d3.queue()
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
     .defer(d3.csv, "data.csv", function(d) { 
 		  json.push({"geoid": d.geoid, "agency": d.agency, "state": d.state, "population": d.population}); 
-		  if(d.population > max) { max = d.population; } if(d.population < min) { min = d.population; } heatmap.set(d.geoid, +d.population); 
+		  if(d.population > max) { max = d.population; } if(d.population < min) { min = d.population; } heatmap.set(d.geoid, +acc); 
+		  acc++;
 		})
     .await(ready);
 
@@ -81,7 +83,7 @@ function ready(error, us) {
     .selectAll("path")
     .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
-      .attr("fill", function(d) { d.value = heatmap.get(d.id); if(d.value != null) { return color((d.value / max) * 10); } else { return "grey"; }})
+      .attr("fill", function(d) { var v = heatmap.get(d.id); if(json[v] != null) { d.value = json[v].population; d.properties = json[v]; } if(d.value != null) { return color((d.value / max) * 10); } else { return "grey"; }})
 	  //.on("mouseover", function(d) { selected = d.id; })
 	  .on("click", function(d) { var obj = d3.select(this);
 	    if(obj.attr("fill") == "yellow") {
@@ -110,12 +112,7 @@ function ready(error, us) {
 	  })
       .attr("d", path)
     .append("title")
-      .text(function(d) { var info; var data; 
-	      for(var j = 0; j < json.length; j++) { 
-		  if(json[j].geoid == d.id) {
-			data = json[j];
-			} 
-	  	}
+      .text(function(d) { var info; var data = json[heatmap.get(d.id)];
 		if(d.value != null) {info = data.agency + ", " + data.state + "\nPopulation: " + data.population; return info; } 
 	  	else { return "No data available."; } });
 

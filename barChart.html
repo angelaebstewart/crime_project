@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Bar Chart</title>
+    <script src="getters.js"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
+    
     <script src="barChart.js"></script>
+    
     <style>
         div {
             padding: 20px 0 0 10px;
@@ -14,6 +17,20 @@
 <body>
     <div id="updatableChart"></div>
     <script>
+        //alert("before gender data");
+        var jsonData;
+        d3.json("countyData.json", function(error, data) {
+            if(error) {
+                console.log(error);
+            }
+            
+            console.log(data["1001"].abbreviation);
+            getSexData(data, "1001");
+            
+        });
+
+
+        
         var dataSet = [];
         var inputData = dataSet[0] = [{'label' : 'label1', 'value' : 37}, 
             {'label' : 'label2', 'value' : 12}, 

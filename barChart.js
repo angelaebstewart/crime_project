@@ -194,6 +194,7 @@ function barChart() {
                     .attr('y', function(d) { return height - (d.value * heightScale);}) //WAS 0
                     .attr('height', function(d) { return d.value * heightScale; });
 
+
                /* updateBarText
                     .transition()
                     .duration(1000)
@@ -217,6 +218,17 @@ function barChart() {
                     .delay(function(d, i) { return (data.length - i) * 40; })
                     .attr('height', function(d) { return d.value * heightScale; })
                     .style('opacity', 1);
+
+                //alert("after bar enter");
+                /*updateBarText.enter()
+                    .append("text")
+                    .attr("class", "bar-label")
+                    .attr("fill", "black")
+                    .attr("x", function(d, i) { alert("in x"); return margin.left + ((i * barPadding) + (i * barWidth) + (barWidth / 2))})
+                    .attr("y", height + 10)
+                    .attr("text-anchor", "middle")
+                    .attr("dy", ".35em") //vertical align middle
+                    .text(function(d){ alert(d.label); return d.label; });*/
 
                 /*updateBarText.enter()
                     .append("text")

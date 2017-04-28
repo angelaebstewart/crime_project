@@ -24,10 +24,11 @@ var acc = 0;
 
 d3.queue()
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
-    .defer(d3.csv, "data.csv", function(d) { 
-		  json.push({"geoid": d.geoid, "agency": d.agency, "state": d.state, "population": d.population}); 
-		  if(d.population > max) { max = d.population; } if(d.population < min) { min = d.population; } heatmap.set(d.geoid, +acc); 
-		  acc++;
+    .defer(d3.csv, "data2.csv", function(d) {
+                  if(d.geoid < 10000) { d.geoid = "0" + d.geoid; }
+		  json.push({"geoid": d.geoid, "county": d.county, "state": d.state, "population": d.population, "male": d.male, "female": d.female, "other": d.other, "asian": d.asian, "black": d.black, "hawaiian": d.hawaiian, "native": d.aboriginal, "multiple": d.multiple, "violent": d.violent, "property": d.property});
+		  if(parseInt(d.violent) > max) { max = parseInt(d.violent); } if(parseInt(d.violent) < min) { min = parseInt(d.violent); } heatmap.set(d.geoid, +acc);
+                  acc++;
 		})
     .await(ready);
 
@@ -75,7 +76,7 @@ g.call(d3.axisBottom(x)
 
 function ready(error, us) {
   if (error) throw error;
-
+  
   svg.append("g")
       .call(zoom).on("wheel.zoom", null)
       .attr("class", "counties")
@@ -84,15 +85,15 @@ function ready(error, us) {
     .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
       .attr("fill", function(d) { var v = heatmap.get(d.id); 
-          if(json[v] != null) { d.value = json[v].population; d.properties = json[v]; } 
-          if(d.value != null) { return color((d.value / max) * 9); } else { return "grey"; }})
+          if(json[v] != null) { d.value = json[v].violent; d.properties = json[v]; } 
+          if(d.value != null && d.value != -1) { return color(((d.value * 1.0) / (max * 1.0)) * 90); } else { return "grey"; }})
 	  //.on("mouseover", function(d) { selected = d.id; })
 	  .on("click", function(d) { var obj = d3.select(this);
 	    if(obj.attr("fill") == "yellow") {
                 obj.attr("id", "");
 	        obj.attr("fill", function (d) { 
-		if(d.value != null) {
-		  return color((d.value / max) * 9); 
+		if(d.value != null && d.value != -1) {
+		  return color(((d.value * 1.0) / (max * 1.0)) * 90); 
 		} 
 		else { return "grey"; } 
 		}); }
@@ -114,9 +115,15 @@ function ready(error, us) {
 	  })
       .attr("d", path)
     .append("title")
-      .text(function(d) { var info; var data = json[heatmap.get(d.id)];
-		if(d.value != null) {info = data.agency + ", " + data.state + "\nPopulation: " + data.population; return info; } 
-	  	else { return "No data available."; } });
+      .text(function(d) { var info = ""; var data = json[heatmap.get(d.id)];
+		if(d.value != null && d.value != -1) {info = data.county + ", " + data.state + "\nPopulation: " + data.violent; return info; } 
+	  	else {
+                    if(data != null && data.county != null && data.state != null) {
+                        info = data.county + ", " + data.state + "\n";
+                    }
+                    info = info + "No data available."; return info;
+                }
+            });
 
   svg.append("path")
       .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))

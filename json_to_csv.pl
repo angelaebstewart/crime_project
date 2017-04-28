@@ -14,8 +14,36 @@ else {
 }
 
 my %hash = ();
+my $geoid = 0;
+my $state = 0;
+my $st = 0;
+my $county = 0;
+my $population = 0;
+my $violent = 0;
+my $property = 0;
+my $murder = 0;
+my $rape = 0;
+my $robbery = 0;
+my $assault = 0;
+my $burglary = 0;
+my $larceny = 0;
+my $vehicle = 0;
+my $arson = 0;
+my $male = 0;
+my $female = 0;
+my $asian = 0;
+my $black = 0;
+my $hawaiian = 0;
+my $native = 0;
+my $white = 0;
+my $other = 0;
+my $multiple = 0;
+my $income = 0;
 
-print(STDOUT "geoid,state,st,county,population,violent,property,murder,rape,robbery,assault,burglary,larceny,vehicle,arson,male,female,asian,black,hawaiian,native,white,other,multiple,income\n");
+my $i = 0;
+my $x = 0;
+
+print(STDOUT "geoid,state,st,county,population,violent,property,murder,rape,robbery,assault,burglary,larceny,vehicle,arson,male,female,asian,black,hawaiian,aboriginal,white,other,multiple,income\n");
 open(INPUT, $file);
 while(my $line = <INPUT>) {
     #{"abbreviation": "TX", "violent": 126.63159945451004, "asian": "0.001363725", "female": "0.503019677", "rape": 9.74089226573154, "native": "0.007013442", "state": "Texas", "other": "0.042372881", 
@@ -23,24 +51,41 @@ while(my $line = <INPUT>) {
     #"population": "10266", "county": "Lamb", "male": "0.496980323", "larceny": 526.0081823495032, "robbery": 0.0, "mixed": "0.00905903", "property": 107.14981492304695, "geoid": "48279"}}
     my @json = split('},', $line);
     foreach my $j (@json) {
-        if($j =~ m/.*\"abbreviation\": \"(?<st>\w{2}).*\"violent\": (?<violent>\-?\d+(\.\d+)*).*\"asian\": \"(?<asian>\-?\d+(\.\d+)*).*\"female\": \"(?<female>\-?\d+(\.\d+)*).*\"rape\": (?<rape>\-?\d+(\.\d+)*).*\"native\": \"(?<native>\-?\d+(\.\d+)*).*\"state\": \"(?<state>\w+).*\"other\": \"(?<other>\-?\d+(\.\d+)*).*\"black\": \"(?<black>\-?\d+(\.\d+)*).*\"income\": \"(?<income>\-?\d+(\.\d+)*).*\"white\": \"(?<white>\-?\d+(\.\d+)*).*\"murder\": (?<murder>\-?\d+(\.\d+)*)\"hawaiian\": \"(?<hawaiian>\-?\d+(\.\d+)*).*\"vehicle\": (?<vehicle>\-?\d+(\.\d+)*).*\"assault\": (?<assault>\-?\d+(\.\d+)*).*\"burglary\": (?<burglary>\-?\d+(\.\d+)*).*\"population\": \"(?<population>\d+).*\"county\": \"(?<county>\w+).*\"male\": \"(?<male>\-?\d+(\.\d+)*).*\"larceny\": (?<larceny>\-?\d+(\.\d+)*).*\"robbery\": (?<robbery>\-?\d+(\.\d+)*).*\"mixed\": \"(?<multiple>\-?\d+(\.\d+)*).*\"property\": (?<property>\-?\d+(\.\d+)*).*\"geoid\": \"(?<geoid>\d+).*/) {
-            print(STDOUT $j);
+#        if($j =~ m/.*\"abbreviation\": \"(?<st>\w{2}).*\"violent\": (?<violent>\-?\d+(\.\d+)*).*\"asian\": \"(?<asian>\-?\d+(\.\d+)*).*\"female\": \"(?<female>\-?\d+(\.\d+)*).*\"rape\": (?<rape>\-?\d+(\.\d+)*).*\"native\": \"(?<native>\-?\d+(\.\d+)*).*\"state\": \"(?<state>\w+).*\"other\": \"(?<other>\-?\d+(\.\d+)*).*\"black\": \"(?<black>\-?\d+(\.\d+)*).*\"income\": \"(?<income>\-?\d+(\.\d+)*).*\"white\": \"(?<white>\-?\d+(\.\d+)*).*\"murder\": (?<murder>\-?\d+(\.\d+)*)\"hawaiian\": \"(?<hawaiian>\-?\d+(\.\d+)*).*\"vehicle\": (?<vehicle>\-?\d+(\.\d+)*).*\"assault\": (?<assault>\-?\d+(\.\d+)*).*\"burglary\": (?<burglary>\-?\d+(\.\d+)*).*\"population\": \"(?<population>\d+).*\"county\": \"(?<county>\w+).*\"male\": \"(?<male>\-?\d+(\.\d+)*).*\"larceny\": (?<larceny>\-?\d+(\.\d+)*).*\"robbery\": (?<robbery>\-?\d+(\.\d+)*).*\"mixed\": \"(?<multiple>\-?\d+(\.\d+)*).*\"property\": (?<property>\-?\d+(\.\d+)*).*\"geoid\": \"(?<geoid>\d+).*/) {
+        $i++;
+        if($j =~ m/.*\"abbreviation\": \"(?<st>\w{2}).*\"violent\": (?<violent>\-?\d+(\.\d+)*).*\"asian\": \"(?<asian>\-?\d+(\.\d+)*).*\"female\": \"(?<female>\-?\d+(\.\d+)*).*\"rape\": (?<rape>\-?\d+(\.\d+)*).*\"native\": \"(?<native>\-?\d+(\.\d+)*).*\"state\": \"(?<sta>.*)\".*\"other\": \"(?<other>\-?\d+(\.\d+)*).*\"black\": \"(?<black>\-?\d+(\.\d+)*).*\"income\": \"(?<income>\-?\d+(\.\d+)*).*\"white\": \"(?<white>\-?\d+(\.\d+)*).*\"murder\": (?<murder>\-?\d+(\.\d+)*).*\"hawaiian\": \"(?<hawaiian>\-?\d+(\.\d+)*).*\"vehicle\": (?<vehicle>\-?\d+(\.\d+)*).*\"assault\": (?<assault>\-?\d+(\.\d+)*).*\"burglary\": (?<burglary>\-?\d+(\.\d+)*).*\"population\": \"(?<population>\d+).*\"county\": \"(?<county>[a-zA-Z\.\s\-\']*).*\"male\": \"(?<male>\-?\d+(\.\d+)*).*\"larceny\": (?<larceny>\-?\d+(\.\d+)*).*\"robbery\": (?<robbery>\-?\d+(\.\d+)*).*\"mixed\": \"(?<multiple>\-?\d+(\.\d+)*).*\"property\": (?<property>\-?\d+(\.\d+)*).*\"geoid\": \"(?<geoid>\d+).*/) {
+            $x++;
+            $geoid = $+{geoid};
+            $state = $+{sta};
+            $st = $+{st};
+            $county = $+{county};
+            $population = $+{population};
+            $violent = $+{violent};
+            $property = $+{property};
+            $murder = $+{murder};
+            $rape = $+{rape};
+            $robbery = $+{robbery};
+            $assault = $+{assault};
+            $burglary = $+{burglary};
+            $larceny = $+{larceny};
+            $vehicle = $+{vehicle};
+            #$arson = $+{arson};
+            $male = $+{male};
+            $female = $+{female};
+            $asian = $+{asian};
+            $black = $+{black};
+            $hawaiian = $+{hawaiian};
+            $native = $+{native};
+            $white = $+{white};
+            $other = $+{other};
+            $multiple = $+{multiple};
+            $income = $+{income};
+            print(STDOUT "$geoid,$state,$st,$county,$population,$violent,$property,$murder,$rape,$robbery,$assault,$burglary,$larceny,$vehicle,$arson,$male,$female,$asian,$black,$hawaiian,$native,$white,$other,$multiple,$income\n");
+        }
+        else {
+            print(STDERR "$j\n");
         }
     }
 }
-print(STDOUT "\n");
-#my $i = 0;
-#foreach my $task (sort keys %hash) {
-#    if($count_hash{$task} > 1) {
-#        if($i < scalar(keys %hash) - 1) {
-#            print(STDOUT "{\"task_id\": $task, \"time\": $hash{$task}},");
-#        }
-#        else {
-#            print(STDOUT "$hash{$task}");
-#        }
-#        $i++;
-#    }
-#}
-#print(STDOUT "\n]}");
-
+print(STDERR "$x records matched out of $i total records.\n");
 # vim: tabstop=8 shiftwidth=4 softtabstop=4 expandtab shiftround autoindent

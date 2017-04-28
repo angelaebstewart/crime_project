@@ -83,14 +83,16 @@ function ready(error, us) {
     .selectAll("path")
     .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
-      .attr("fill", function(d) { var v = heatmap.get(d.id); if(json[v] != null) { d.value = json[v].population; d.properties = json[v]; } if(d.value != null) { return color((d.value / max) * 10); } else { return "grey"; }})
+      .attr("fill", function(d) { var v = heatmap.get(d.id); 
+          if(json[v] != null) { d.value = json[v].population; d.properties = json[v]; } 
+          if(d.value != null) { return color((d.value / max) * 9); } else { return "grey"; }})
 	  //.on("mouseover", function(d) { selected = d.id; })
 	  .on("click", function(d) { var obj = d3.select(this);
 	    if(obj.attr("fill") == "yellow") {
                 obj.attr("id", "");
 	        obj.attr("fill", function (d) { 
 		if(d.value != null) {
-		  return color((d.value / max) * 10); 
+		  return color((d.value / max) * 9); 
 		} 
 		else { return "grey"; } 
 		}); }
@@ -119,8 +121,8 @@ function ready(error, us) {
   svg.append("path")
       .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
       .attr("class", "states")
-      .attr("d", path)
-	  .on("click", function() { alert("Border clicked. Please click on inside the state."); });
+      .attr("d", path);
+	  //.on("click", function() { alert("Border clicked. Please click on inside the state."); });
 }
 
 function zoomed() {

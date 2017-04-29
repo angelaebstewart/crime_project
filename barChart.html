@@ -18,61 +18,19 @@
     <div id="updatableChart"></div>
     <script>
         //alert("before gender data");
-        var jsonData;
+        //var jsonData;
         d3.json("countyData.json", function(error, data) {
             if(error) {
                 console.log(error);
             }
             
-            console.log(data["1001"].abbreviation);
-            getSexData(data, "1001");
-            
+            var inputData = getSexData(data, "16079");
+            var updatableChart = barChart().width(800).height(450).data(inputData); //change width and height here
+            d3.select('#updatableChart')
+                .call(updatableChart);
+
+
         });
-
-
-        
-        var dataSet = [];
-        var inputData = dataSet[0] = [{'label' : 'label1', 'value' : 37}, 
-            {'label' : 'label2', 'value' : 12}, 
-            {'label' : 'label3', 'value' : 17}, 
-            {'label' : 'label4', 'value' : 22}, 
-            {'label' : 'label5', 'value' : 12}];
-
-        
-        //var lowTemperatures = dataSet[1] = highTemperatures.map(function(d) { return d - Math.random() * 30});
-        var milesRun = dataSet[1] = [{'label' : 'labelA', 'value' : 32}, 
-            {'label' : 'labelB', 'value' : 12},
-            {'label' : 'labelC', 'value' : 68},
-            {'label' : 'labelD', 'value' : 17},
-            {'label' : 'labelE', 'value' : 1},
-            {'label' : 'labelF', 'value' : 42},
-            {'label' : 'labelG', 'value' : 50},
-            {'label' : 'labelH', 'value' : 3},
-            {'label' : 'labelI', 'value' : 9},
-            {'label' : 'labelJ', 'value' : 82}];
-        //var fillColors = ['coral', 'steelblue', 'teal'];
-        
-        var updatableChart = barChart().width(800).height(450).data(inputData); //change width and height here
-
-        d3.select('#updatableChart')
-            .call(updatableChart);
-
-
-        //alert("about to change Chart");
-
-
-        //updatableChart.data(milesRun);
-
-        //alert("about to change again");
-
-        //updatableChart.data(inputData);
-        var i = 1;
-        window.setInterval(function() {
-            //alert(i);
-            updatableChart.data(dataSet[i]); //cycle through the data
-            //updatableChart.fillColor('coral');
-            i = (i+1)%2;
-        }, 2000);
 
     </script>
 </body>

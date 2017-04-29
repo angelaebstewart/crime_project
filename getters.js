@@ -1,6 +1,8 @@
 function getSexData(data, id) {
-	var sexData = [{"female" : data[id].female, "male" : data[id].male}];
-	console.log(sexData);
+	var sexData = [
+			{'label' : 'Female', 'value' : data[id].female}, 
+            {'label' : 'Male', 'value' : data[id].male}];
+
 	return sexData;
 
 }

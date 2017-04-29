@@ -27,7 +27,7 @@ d3.queue()
     .defer(d3.csv, "data2.csv", function(d) {
                   if(d.geoid < 10000) { d.geoid = "0" + d.geoid; }
 		  json.push({"geoid": d.geoid, "county": d.county, "state": d.state, "population": d.population, "male": d.male, "female": d.female, "other": d.other, "asian": d.asian, "black": d.black, "hawaiian": d.hawaiian, "native": d.aboriginal, "multiple": d.multiple, "violent": d.violent, "property": d.property, "active": d.population});
-		  if(parseInt(d.population) > max) { max = parseInt(d.population); } if(parseInt(d.population) < min) { min = parseInt(d.population); } heatmap.set(d.geoid, +acc);
+		  if(parseInt(d.population) > max) { max = parseInt(d.population); } if(parseInt(d.population) < min && parseInt(d.population) != -1) { min = parseInt(d.population); } heatmap.set(d.geoid, +acc);
                   acc++;
 		})
     .await(ready);
@@ -69,7 +69,7 @@ g.append("text")
 
 g.call(d3.axisBottom(x)
     .tickSize(13)
-    .tickFormat(function(x, i) { return x; })
+    .tickFormat(function(x, i) { return i ? x: x; })
     //.tickValues(color.domain()))
     .tickValues([1, 2, 3, 4, 5, 6, 7, 8, 9]))
   .select(".domain")
@@ -94,18 +94,29 @@ function update_map() {
     .defer(d3.csv, "data2.csv", function(d) {
                   if(d.geoid < 10000) { d.geoid = "0" + d.geoid; }
 		  json.push({"geoid": d.geoid, "county": d.county, "state": d.state, "population": d.population, "male": d.male, "female": d.female, "other": d.other, "asian": d.asian, "black": d.black, "hawaiian": d.hawaiian, "native": d.aboriginal, "multiple": d.multiple, "violent": d.violent, "property": d.property, "active": d.violent});
-		  if(parseInt(d.violent) > max) { max = parseInt(d.violent); } if(parseInt(d.violent) < min) { min = parseInt(d.violent); } heatmap.set(d.geoid, +acc);
+		  if(parseInt(d.violent) > max) { max = parseInt(d.violent); } if(parseInt(d.violent) < min && parseInt(d.violent) != -1) { min = parseInt(d.violent); } heatmap.set(d.geoid, +acc);
                   acc++;
 		})
     .await(ready);
     return 0;
 }
 
+function update_ticks() {
+    var ticks = document.getElementsByClassName("tick");
+    for(var t = 0 in ticks) {
+        if(t == 0) { ticks[t].innerHTML = "<line stroke=\"#000\" y2=\"13\" x1=\"0.5\" x2=\"0.5\"></line><text fill=\"#000\" y=\"16\" x=\"0.5\" dx=\"1.5em\" dy=\"1em\" transform=\"rotate(30)\">" + min + "</text>"; }
+        else { ticks[t].innerHTML = "<line stroke=\"#000\" y2=\"13\" x1=\"0.5\" x2=\"0.5\"></line><text fill=\"#000\" y=\"16\" x=\"0.5\" dx=\"1.5em\" dy=\"1em\" transform=\"rotate(30)\">" + Math.ceil(max * ((t * 1.0) / 9.0)) + "</text>"; }
+    }
+    return 0;
+}
+
+
 //update_map();
 function ready(error, us) {
   if (error) throw error;
   
   update_caption();
+  update_ticks();
   svg.append("g")
       .attr("id", "map_counties")
       .call(zoom).on("wheel.zoom", null)

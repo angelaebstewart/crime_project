@@ -26,7 +26,7 @@ d3.queue()
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
     .defer(d3.csv, "data2.csv", function(d) {
                   if(d.geoid < 10000) { d.geoid = "0" + d.geoid; }
-		  json.push({"geoid": d.geoid, "county": d.county, "state": d.state, "population": d.population, "male": d.male, "female": d.female, "other": d.other, "asian": d.asian, "black": d.black, "hawaiian": d.hawaiian, "native": d.aboriginal, "multiple": d.multiple, "violent": d.violent, "property": d.property, "active": d.population});
+		  json.push({"geoid": d.geoid, "county": d.county, "state": d.state, "population": d.population, "male": d.male, "female": d.female, "other": d.other, "asian": d.asian, "black": d.black, "hawaiian": d.hawaiian, "aboriginal": d.aboriginal, "multiple": d.multiple, "white": d.white, "violent": d.violent, "property": d.property, "overall": d.violent + d.property, "active": d.population});
 		  if(parseInt(d.population) > max) { max = parseInt(d.population); } if(parseInt(d.population) < min && parseInt(d.population) != -1) { min = parseInt(d.population); } heatmap.set(d.geoid, +acc);
                   acc++;
 		})
@@ -81,7 +81,6 @@ function update_caption() {
     return 0;
 }
 
-var checked = 0;
 function update_map() {
    checked++;
    max = 0;
@@ -93,7 +92,7 @@ function update_map() {
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
     .defer(d3.csv, "data2.csv", function(d) {
                   if(d.geoid < 10000) { d.geoid = "0" + d.geoid; }
-		  json.push({"geoid": d.geoid, "county": d.county, "state": d.state, "population": d.population, "male": d.male, "female": d.female, "other": d.other, "asian": d.asian, "black": d.black, "hawaiian": d.hawaiian, "native": d.aboriginal, "multiple": d.multiple, "violent": d.violent, "property": d.property, "active": d.violent});
+		  json.push({"geoid": d.geoid, "county": d.county, "state": d.state, "population": d.population, "male": d.male, "female": d.female, "other": d.other, "asian": d.asian, "black": d.black, "hawaiian": d.hawaiian, "aboriginal": d.aboriginal, "multiple": d.multiple, "white": d.white, "violent": d.violent, "property": d.property, "overall": d.violent + d.property, "active": d.violent});
 		  if(parseInt(d.violent) > max) { max = parseInt(d.violent); } if(parseInt(d.violent) < min && parseInt(d.violent) != -1) { min = parseInt(d.violent); } heatmap.set(d.geoid, +acc);
                   acc++;
 		})
@@ -114,7 +113,7 @@ function update_ticks() {
 //update_map();
 function ready(error, us) {
   if (error) throw error;
-  console.log(min + " - " + max); 
+
   update_caption();
   update_ticks();
   svg.append("g")
@@ -157,10 +156,17 @@ function ready(error, us) {
       .attr("d", path)
     .append("title")
       .text(function(d) { var info = ""; var data = json[heatmap.get(d.id)];
-		if(d.value != null && d.value != -1) {info = data.county + ", " + data.state + "\nPopulation: " + data.population + "\nActive: " + data.active; return info; } 
+		if(d.value != null && d.value != -1) {info = data.county + ", " + data.state + "\n\nPopulation: " + data.population;
+                    if(data.active != data.population) { info = info + "\nActive: "; }
+                    info = info + "\n\nMale: " + (Number(data.male) * 100).toFixed(2) + "%\nFemale: " + (Number(data.female) * 100).toFixed(2) + "%\n\nAsian: " + (Number(data.asian) * 100).toFixed(2) + "%\nBlack: " + (Number(data.black) * 100).toFixed(2) + "%\nHawaiian or Pacific Islander: " + (Number(data.hawaiian) * 100).toFixed(2) + "%\nNative American: " + (Number(data.aboriginal) * 100).toFixed(2) + "%\nWhite: " + (Number(data.white) * 100).toFixed(2) + "%\nMultiracial: " + (Number(data.multiple) * 100).toFixed(2) + "%\nOther: " + (Number(data.other) * 100).toFixed(2) + "%"; 
+                    return info;
+                }
 	  	else {
                     if(data != null && data.county != null && data.state != null) {
                         info = data.county + ", " + data.state + "\n";
+                    }
+                    if(data != null && data.active != null) {
+                        info = info + "No crime data available."; return info;
                     }
                     info = info + "No data available."; return info;
                 }
@@ -172,7 +178,6 @@ function ready(error, us) {
       .attr("id", "map_states")
       .attr("d", path);
 	  //.on("click", function() { alert("Border clicked. Please click on inside the state."); });
-    if(checked == 0) { update_map(); }
 }
 
 function zoomed() {

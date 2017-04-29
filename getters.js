@@ -18,3 +18,14 @@ function getRaceData(data, id) {
 
 	return raceData;
 }
+
+function getCountiesMedianIncome(data, id) {
+	console.log("in getCountiesMedianIncome");
+}
+
+function getStatesMedianIncome(data, id) {
+	console.log("in getStatesMedianIncome");
+}
+
+
+

@@ -103,9 +103,9 @@ function update_map() {
 
 function update_ticks() {
     var ticks = document.getElementsByClassName("tick");
-    for(var t = 0 in ticks) {
+    for(var t = 0; t < ticks.length; t++) {
         if(t == 0) { ticks[t].innerHTML = "<line stroke=\"#000\" y2=\"13\" x1=\"0.5\" x2=\"0.5\"></line><text fill=\"#000\" y=\"16\" x=\"0.5\" dx=\"1.5em\" dy=\"1em\" transform=\"rotate(30)\">" + min + "</text>"; }
-        else { ticks[t].innerHTML = "<line stroke=\"#000\" y2=\"13\" x1=\"0.5\" x2=\"0.5\"></line><text fill=\"#000\" y=\"16\" x=\"0.5\" dx=\"1.5em\" dy=\"1em\" transform=\"rotate(30)\">" + Math.ceil(max * ((t * 1.0) / 9.0)) + "</text>"; }
+        else { ticks[t].innerHTML = "<line stroke=\"#000\" y2=\"13\" x1=\"0.5\" x2=\"0.5\"></line><text fill=\"#000\" y=\"16\" x=\"0.5\" dx=\"1.5em\" dy=\"1em\" transform=\"rotate(30)\">" + Math.ceil(max * ((t + 1.0) / 9.0)) + "</text>"; }
     }
     return 0;
 }
@@ -114,7 +114,7 @@ function update_ticks() {
 //update_map();
 function ready(error, us) {
   if (error) throw error;
-  
+  console.log(min + " - " + max); 
   update_caption();
   update_ticks();
   svg.append("g")

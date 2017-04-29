@@ -26,7 +26,7 @@ d3.queue()
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
     .defer(d3.csv, "data2.csv", function(d) {
                   if(d.geoid < 10000) { d.geoid = "0" + d.geoid; }
-		  json.push({"geoid": d.geoid, "county": d.county, "state": d.state, "population": d.population, "male": d.male, "female": d.female, "other": d.other, "asian": d.asian, "black": d.black, "hawaiian": d.hawaiian, "aboriginal": d.aboriginal, "multiple": d.multiple, "white": d.white, "violent": d.violent, "property": d.property, "overall": d.violent + d.property, "active": d.population});
+		  json.push({"geoid": d.geoid, "county": d.county, "state": d.state, "population": d.population, "male": d.male, "female": d.female, "other": d.other, "asian": d.asian, "black": d.black, "hawaiian": d.hawaiian, "aboriginal": d.aboriginal, "multiple": d.multiple, "white": d.white, "violent": d.violent, "property": d.property, "murder": d.murder, "rape": d.rape, "robbery": d.robbery, "assault": d.assault, "burglary": d.burglary, "larceny": d.larceny, "motor": d.vehicle, "overall": d.violent + d.property, "active": d.population});
 		  if(parseInt(d.population) > max) { max = parseInt(d.population); } if(parseInt(d.population) < min && parseInt(d.population) != -1) { min = parseInt(d.population); } heatmap.set(d.geoid, +acc);
                   acc++;
 		})
@@ -82,7 +82,6 @@ function update_caption() {
 }
 
 function update_map() {
-   checked++;
    max = 0;
    min = 999999999;
    heatmap.clear();
@@ -92,7 +91,7 @@ function update_map() {
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
     .defer(d3.csv, "data2.csv", function(d) {
                   if(d.geoid < 10000) { d.geoid = "0" + d.geoid; }
-		  json.push({"geoid": d.geoid, "county": d.county, "state": d.state, "population": d.population, "male": d.male, "female": d.female, "other": d.other, "asian": d.asian, "black": d.black, "hawaiian": d.hawaiian, "aboriginal": d.aboriginal, "multiple": d.multiple, "white": d.white, "violent": d.violent, "property": d.property, "overall": d.violent + d.property, "active": d.violent});
+		  json.push({"geoid": d.geoid, "county": d.county, "state": d.state, "population": d.population, "male": d.male, "female": d.female, "other": d.other, "asian": d.asian, "black": d.black, "hawaiian": d.hawaiian, "aboriginal": d.aboriginal, "multiple": d.multiple, "white": d.white, "violent": d.violent, "property": d.property, "overall": d.violent + d.property, "murder": d.murder, "rape": d.rape, "robbery": d.robbery, "assault": d.assault, "burglary": d.burglary, "larceny": d.larceny, "motor": d.vehicle, "active": d.violent});
 		  if(parseInt(d.violent) > max) { max = parseInt(d.violent); } if(parseInt(d.violent) < min && parseInt(d.violent) != -1) { min = parseInt(d.violent); } heatmap.set(d.geoid, +acc);
                   acc++;
 		})

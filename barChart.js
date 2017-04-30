@@ -84,15 +84,15 @@ function barChart() {
                 .on("mouseover", function(d) {d3.select(this).attr("fill", d3.rgb(0, 62, 31)); var coordinates = d3.mouse(this); focus.select("text").attr("x", coordinates[0]).attr("dy", coordinates[1] - 5).text(d.value); focus.style("display", null);})
                 .on("mouseout", function() {d3.select(this).attr("fill",  d3.rgb(68, 143, 163)); focus.style("display", "none");});
            
-            var focus = svg.append("g")
+            var focus = svg.append("title")
                 .attr("class", "focus")
                 .style("fill", "black")
                 .style("display", "none");
                 
-            focus.append("text")
+            /*focus.append("text")
                 .attr("x", 9)
                 .attr("dy", ".35em")
-                .style("text-anchor", "middle");
+                .style("text-anchor", "middle");*/
 
             var barText = svg.selectAll('g')
                 .data(data)

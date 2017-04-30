@@ -49,8 +49,8 @@
     });
 
     function drawScatter(data) {
-        console.log(countyData);
-        console.log(nationalData);
+        //console.log(countyData);
+        //console.log(nationalData);
         var margin = {
             top: 20,
             right: 20,
@@ -93,6 +93,8 @@
         data.forEach(function(d) {
             d.x = +d.x.value;
             d.y = +d.y.value;
+            console.log(d.x.label);
+            d.label = d.x.label;
         });
 
         x.domain(d3.extent(data, function(d) {
@@ -137,7 +139,23 @@
             })
             .attr("cy", function(d) {
                 return y(d.y);
-            });
+            })
+            .on("mouseover", function(d) { console.log(d.label);
+                d3.select(this).attr("fill", d3.rgb(0, 62, 31)); 
+                var coordinates = d3.mouse(this); 
+                focus.select("text").attr("x", coordinates[0]).attr("dy", coordinates[1] - 5).text("some text"); focus.style("display", null);
+            })
+            .on("mouseout", function() {d3.select(this).attr("fill",  d3.rgb(68, 143, 163)); focus.style("display", "none");});
+
+        var focus = svg.append("g")
+            .attr("class", "focus")
+            .style("fill", "black")
+            .style("display", "none");
+                
+        focus.append("text")
+            .attr("x", 9)
+            .attr("dy", ".35em")
+            .style("text-anchor", "middle");
     }
 
 
@@ -153,7 +171,7 @@
 
         }
         console.log(x);
-        console.log(y);
+        //console.log(y);
 
         var dataOut = [];
         for (i = 0; i < y.length; i++) {

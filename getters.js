@@ -75,7 +75,6 @@ function getCountiesCrimeRate(data, id, crime) {
 	{
 		if (data[s].abbreviation == id)
 		{
-			console.log("in if");
 			var county = data[s];
 			var crimeData = {'label' : county["county"], 'value' : county[crime]};
 			console.log(crimeData);

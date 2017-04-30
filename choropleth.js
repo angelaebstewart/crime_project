@@ -140,7 +140,7 @@ function update_map(opt) {
                   d.active = get_active(d, opt);
                   update_caption(opt);
 		  json.push({"geoid": d.geoid, "county": d.county, "state": d.state, "population": d.population, "male": d.male, "female": d.female, "other": d.other, "asian": d.asian, "black": d.black, "hawaiian": d.hawaiian, "aboriginal": d.aboriginal, "multiple": d.multiple, "white": d.white, "violent": d.violent, "property": d.property, "overall": d.overall, "murder": d.murder, "rape": d.rape, "robbery": d.robbery, "assault": d.assault, "burglary": d.burglary, "larceny": d.larceny, "motor": d.vehicle, "active": d.active});
-		  if(parseInt(d.active) > max) { max = parseInt(d.active); } if(parseInt(d.active) < min && parseInt(d.active) != -1) { min = parseInt(d.active); } heatmap.set(d.geoid, +acc);
+		  if(Number(d.active) > max) { max = Number(d.active); } if(Number(d.active) < min && Number(d.active) != -1) { min = Number(d.active); } heatmap.set(d.geoid, +acc);
                   acc++;
 		})
     .await(ready);

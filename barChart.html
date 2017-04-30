@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Bar Chart</title>
-    <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="barChart.js"></script>
     <script src="getters.js"></script>
-
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    
+    <script src="barChart.js"></script>
+    
     <style>
         div {
             padding: 20px 0 0 10px;
@@ -16,7 +17,6 @@
 <body>
     <div id="updatableChart"></div>
     <script>
-
         var countyData = [];
         var updatableChart;
         createRadioButtons();
@@ -26,38 +26,14 @@
             }
             
             countyData = data;
-            updatableChart = barChart().width(800).height(450).data(getRaceData(countyData, "16079")); //change width and height here
+            updatableChart = barChart().width(800).height(450).data(getSexData(countyData, "16079")); //change width and height here
             d3.select('#updatableChart')
                 .call(updatableChart);
-
-        /*var updatableChart;
-        createRadioButtons();
-
-        function whenAvailable(name, callback) {
-            var interval = 10; // ms
-            window.setTimeout(function() {
-                if (window[name]) {
-                    callback(window[name]);
-                } else {
-                    window.setTimeout(arguments.callee, interval);
-                }
-            }, interval);
-        }
-
-        whenAvailable("countyData",function(){
-          updatableChart = barChart().width(800).height(450).data(getRaceData(countyData,"16079")); //change width and height here
-          d3.select('#updatableChart')
-              .call(updatableChart);
-
-          //example of get median incomes
-          getCountiesMedianIncome(countyData,"AL");*/
-
-
         });
         function createRadioButtons() {
-            var crimeTypes = ["Population", "Overall", "Violent", "Property",
-                "Burglary", "Larceny-Theft", "Motor Vehicle Theft",
-                "Murder & Nonnegligent Manslaughter", "Revised Rape",
+            var crimeTypes = ["Population", "Overall", "Violent", "Property", 
+                "Burglary", "Larceny-Theft", "Motor Vehicle Theft", 
+                "Murder & Nonnegligent Manslaughter", "Revised Rape", 
                 "Robbery", "Aggravated Assault"];
             var selected = 0;
             var form = d3.select("body").append("form");
@@ -78,7 +54,7 @@
         function radioOnClick(toggle_val) {
             updatableChart.data(getCountiesMedianIncome(countyData, "AL")); //this is just in here as dummy data to show how to update the bar chart
         }
-
+        
         //on double click in choropleth.js, zoomed
     </script>
 </body>

@@ -17,7 +17,7 @@ function barChart() {
 
     function chart(selection){
         selection.each(function () {
-			
+            
             var dataVals = [];
             var labelVals = [];
 
@@ -27,6 +27,12 @@ function barChart() {
             var barWidth = barSpacing - barPadding;
             var maxValue = d3.max(dataVals);
             var heightScale = height / (maxValue);
+            var numValues = data.length;
+            var addXLabels = false;
+
+            if (numValues < 11) {
+                addXLabels = true;
+            }
 
             var dom = d3.select(this);
             var svg = dom.append('svg')
@@ -35,29 +41,29 @@ function barChart() {
                 .attr('width', width + margin.left + margin.right)
                 .style('fill', fillColor);
 
-			var xScale = d3.scaleOrdinal()
+            var xScale = d3.scaleOrdinal()
                 .range([0, width]);
 
-			var yScale = d3.scaleLinear()
-				.domain([0, maxValue])
+            var yScale = d3.scaleLinear()
+                .domain([0, maxValue])
                 .range([height, 0]);
-			
-			var xAxis = d3.axisBottom()
+            
+            var xAxis = d3.axisBottom()
                 .scale(xScale);
 
-			var yAxis = d3.axisLeft()
-				.scale(yScale)
-				.ticks(5);
-			
-			/*var focus = svg.append("g")
-				.attr("class", "focus")
-				.style("fill", "black")
-				.style("display", "none");
-				
-			focus.append("text")
-				.attr("x", 9)
-				.attr("dy", ".35em")
-				.style("text-anchor", "middle");*/
+            var yAxis = d3.axisLeft()
+                .scale(yScale)
+                .ticks(5);
+            
+            /*var focus = svg.append("g")
+                .attr("class", "focus")
+                .style("fill", "black")
+                .style("display", "none");
+                
+            focus.append("text")
+                .attr("x", 9)
+                .attr("dy", ".35em")
+                .style("text-anchor", "middle");*/
 
             /*svg.append("text")
                 .attr("class", "title")
@@ -88,15 +94,15 @@ function barChart() {
                 .attr("text-anchor", "middle")
                 .attr("dy", ".35em") //vertical align middle
                 .text(function(d){ return d.label; });
-				//.attr("opacity", .2);
+                //.attr("opacity", .2);
                 //.on("mouseover", function(d) {d3.select(this).attr("fill", "red"); var coordinates = [0, 0]; coordinates = d3.mouse(this); var x = coordinates[0]; var y = coordinates[1]; focus.select("text").attr("x", x).attr("dy", y - 5).text("X: " + x.toString() + ", Y: " + y.toString()); focus.style("display", null);})
                 //.on("mouseout", function() {d3.select(this).attr("fill", "coral"); focus.style("display", "none");});
 
 
-			svg.append("g")
-				.attr("class", "y-axis")
-				.attr("transform", "translate(" + margin.left + ",0)")
-				.call(yAxis)
+            svg.append("g")
+                .attr("class", "y-axis")
+                .attr("transform", "translate(" + margin.left + ",0)")
+                .call(yAxis)
                 .append("text")
                 .attr("class", "label")
                 .attr("x", -height/2 )
@@ -153,24 +159,34 @@ function barChart() {
                 data.forEach(function(chartValue, index) {  dataVals.push(chartValue.value); labelVals.push(chartValue.label); });
                 maxValue = d3.max(dataVals);
                 heightScale = height / (maxValue);
+                numValues = data.length;
+
+                if (numValues < 11) {
+                    addXLabels = true;
+                } else {
+                    addXLabels = false;
+                }
+
+
                 yScale.domain([0, maxValue]);
                 svg.select(".y-axis").transition().duration(1000).call(yAxis);
 
                 var update = svg.selectAll('rect.display-bar')
                     .data(data);
-					//.on("mouseover", function(d) {d3.select(this).attr("fill", "red"); var coordinates = [0, 0]; coordinates = d3.mouse(this); var x = coordinates[0]; var y = coordinates[1]; focus.select("text").attr("x", x).attr("dy", y - 5).text("X: " + x.toString() + ", Y: " + y.toString()); focus.style("display", null);})
-					//.on("mouseout", function() {d3.select(this).attr("fill", "coral"); focus.style("display", "none");});
+                    //.on("mouseover", function(d) {d3.select(this).attr("fill", "red"); var coordinates = [0, 0]; coordinates = d3.mouse(this); var x = coordinates[0]; var y = coordinates[1]; focus.select("text").attr("x", x).attr("dy", y - 5).text("X: " + x.toString() + ", Y: " + y.toString()); focus.style("display", null);})
+                    //.on("mouseout", function() {d3.select(this).attr("fill", "coral"); focus.style("display", "none");});
 
-                /*var updateBarText = svg.selectAll('text.bar-label')
-                    .data(data);*/
+                var updateBarText = svg.selectAll('.bar-label')
+                    .data(data);
 
 
                 //alert(dataVals);
                 //alert(labelVals);
 
 
-                svg.selectAll('text.bar-label')
-                    .data(data)
+                /*svg.selectAll('.bar-label')
+                    .data(data)*/
+                updateBarText
                     .transition()
                     .duration(1000)
                     .attr('x', function(d, i) { return margin.left + ((i * barPadding) + (i * barWidth) + (barWidth / 2))})
@@ -219,18 +235,8 @@ function barChart() {
                     .attr('height', function(d) { return d.value * heightScale; })
                     .style('opacity', 1);
 
-                //alert("after bar enter");
-                /*updateBarText.enter()
-                    .append("text")
-                    .attr("class", "bar-label")
-                    .attr("fill", "black")
-                    .attr("x", function(d, i) { alert("in x"); return margin.left + ((i * barPadding) + (i * barWidth) + (barWidth / 2))})
-                    .attr("y", height + 10)
-                    .attr("text-anchor", "middle")
-                    .attr("dy", ".35em") //vertical align middle
-                    .text(function(d){ alert(d.label); return d.label; });*/
 
-                /*updateBarText.enter()
+                updateBarText.enter()
                     .append("text")
                     .attr("class", "bar-label")
                     .attr("fill", "black")
@@ -243,7 +249,7 @@ function barChart() {
                     .duration(1000)
                     .delay(function(d, i) { return (data.length - i) * 40; })
                     .text(function(d){ return d.label; })
-                    .style('opacity', 1);*/
+                    .style('opacity', 1);
 
                 update.exit()
                     .transition()
@@ -255,15 +261,13 @@ function barChart() {
                     .attr('width', 0)
                     .remove();
 
-                /*updateBarText.exit()
-                    .transition
+                updateBarText.exit()
+                    .transition()
                     .duration(650)
                     .delay(function(d, i) { return (data.length - i) * 20; })
                     .style('opacity', 0)
                     .attr('x', 0)
-                    .remove();*/
-				
-
+                    .remove();
             }
 
         });

@@ -55,15 +55,7 @@ function barChart() {
                 .scale(yScale)
                 .ticks(5);
             
-            /*var focus = svg.append("g")
-                .attr("class", "focus")
-                .style("fill", "black")
-                .style("display", "none");
-                
-            focus.append("text")
-                .attr("x", 9)
-                .attr("dy", ".35em")
-                .style("text-anchor", "middle");*/
+
 
             /*svg.append("text")
                 .attr("class", "title")
@@ -78,12 +70,30 @@ function barChart() {
                 .enter()
                 .append('rect')
                 .attr('class', 'display-bar')
-                .attr("id", function(d,i) {return 'bar_' + i})
+                .attr("id", function(d,i) {
+                    if( typeof d.geoid !== 'undefined' ) {
+                        console.log(d.geoid);
+                        return 'bar_' + d.geoid;} else {
+                            return 'bar_' + i;
+                        }
+                    })
                 .attr('y', function (d) { return height - (d.value * heightScale);}) //WAS 0
                 .attr('width', barWidth)
                 .attr('x', function(d, i) {return (i * barSpacing) + margin.left + barPadding;})
-                .attr('height', function (d) { return d.value * heightScale; });
-            
+                .attr('height', function (d) { return d.value * heightScale; })
+                .on("mouseover", function(d) {d3.select(this).attr("fill", d3.rgb(0, 62, 31)); var coordinates = d3.mouse(this); focus.select("text").attr("x", coordinates[0]).attr("dy", coordinates[1] - 5).text(d.value); focus.style("display", null);})
+                .on("mouseout", function() {d3.select(this).attr("fill",  d3.rgb(68, 143, 163)); focus.style("display", "none");});
+           
+            var focus = svg.append("g")
+                .attr("class", "focus")
+                .style("fill", "black")
+                .style("display", "none");
+                
+            focus.append("text")
+                .attr("x", 9)
+                .attr("dy", ".35em")
+                .style("text-anchor", "middle");
+
             var barText = svg.selectAll('g')
                 .data(data)
                 .enter();
@@ -216,7 +226,12 @@ function barChart() {
                 update.enter()
                     .append('rect')
                     .attr('class', 'display-bar')
-                    .attr("id", function(d,i) {return 'bar_' + i})
+                    .attr("id", function(d,i) {
+                        if( typeof d.geoid !== 'undefined' ) {
+                            return d.geoid;} else {
+                                return 'bar_' + i;
+                            }
+                        })
                     .attr('x', function(d, i) {return (i * barSpacing) + margin.left + barPadding;})
                     .attr('width', barWidth)
                     .attr('y', function(d) { return height - (d.value * heightScale);})
@@ -296,7 +311,7 @@ function barChart() {
     };
 
     chart.highlightBar = function(barID) {
-        var selectedBar = d3.select("#bar_" + barID);
+        var selectedBar = d3.select("#" + barID);
         selectedBar.transition().duration(1000).style('fill', d3.rgb(186, 45, 11));
     };
 

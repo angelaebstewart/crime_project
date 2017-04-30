@@ -43,7 +43,7 @@ function getCountiesMedianIncome(data,id) {
 	    if (data[s].abbreviation == id)
 			{
 				var county = data[s];
-				var countyData = {'label' : county["county"], 'value' : county["income"]};
+				var countyData = {'label' : county["county"], 'value' : county["income"], 'geoid' : county["geoid"]};
 				incomeData.push(countyData);
 			}
 	}

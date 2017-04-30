@@ -186,8 +186,15 @@ function ready(error, us) {
 	    else { 
                 var curr = document.getElementById("selected"); 
                 if(curr != null) { curr.setAttribute("fill", selected); curr.setAttribute("id", ""); }
-                obj.attr("id", "selected"); selected = d3.select(this).attr("fill"); d3.select(this).attr("fill", "yellow"); }})
-	  .on("dblclick", function() { clicked++; //var state;
+                obj.attr("id", "selected"); selected = d3.select(this).attr("fill"); d3.select(this).attr("fill", "yellow"); 
+                county_highlight(d.id);
+            }})
+	  .on("dblclick", function(d) { clicked++;
+              if(clicked % 3 != 0) {
+                  var data = json[heatmap.get(d.id)];
+                  context_change(data.state);
+              }
+              //var state;
 		/*for(var j = 0; j < json.length; j++) { 
 		  if(json[j].geoid == d.id) {
 			state = json[j].state;
@@ -223,6 +230,16 @@ function ready(error, us) {
       .attr("class", "states")
       .attr("id", "map_states")
       .attr("d", path);
+}
+
+function context_change(state_selected) {
+
+    return 0;
+}
+
+function county_highlight(geoid) {
+
+    return 0;
 }
 
 function zoomed() {

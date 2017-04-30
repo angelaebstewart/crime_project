@@ -26,7 +26,8 @@ d3.queue()
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
     .defer(d3.csv, "data2.csv", function(d) {
                   if(d.geoid < 10000) { d.geoid = "0" + d.geoid; }
-		  json.push({"geoid": d.geoid, "county": d.county, "state": d.state, "population": d.population, "male": d.male, "female": d.female, "other": d.other, "asian": d.asian, "black": d.black, "hawaiian": d.hawaiian, "aboriginal": d.aboriginal, "multiple": d.multiple, "white": d.white, "violent": d.violent, "property": d.property, "murder": d.murder, "rape": d.rape, "robbery": d.robbery, "assault": d.assault, "burglary": d.burglary, "larceny": d.larceny, "motor": d.vehicle, "overall": d.violent + d.property, "active": d.population});
+                  if(d.violent != null && d.violent != "-1" && d.property != null && d.property != "-1") { d.overall = Number(d.violent) + Number(d.property); } else { d.overall = -1; }
+		  json.push({"geoid": d.geoid, "county": d.county, "state": d.state, "population": d.population, "male": d.male, "female": d.female, "other": d.other, "asian": d.asian, "black": d.black, "hawaiian": d.hawaiian, "aboriginal": d.aboriginal, "multiple": d.multiple, "white": d.white, "violent": d.violent, "property": d.property, "murder": d.murder, "rape": d.rape, "robbery": d.robbery, "assault": d.assault, "burglary": d.burglary, "larceny": d.larceny, "motor": d.vehicle, "overall": d.overall, "active": d.population});
 		  if(parseInt(d.population) > max) { max = parseInt(d.population); } if(parseInt(d.population) < min && parseInt(d.population) != -1) { min = parseInt(d.population); } heatmap.set(d.geoid, +acc);
                   acc++;
 		})
@@ -75,13 +76,57 @@ g.call(d3.axisBottom(x)
   .select(".domain")
     .remove();
 
-function update_caption() {
+var active_data = "Population";
+
+function get_active(d, opt) {
+    var active;
+    active_data = opt;
+    switch(opt) {
+        case "Murder & Nonnegligent Manslaughter":
+            active = d.murder;
+            break;
+        case "Rape":
+            active = d.rape;
+            break;
+        case "Robbery":
+            active = d.robbery;
+            break;
+        case "Aggravated Assault":
+            active = d.assault;
+            break;
+        case "Burglary":
+            active = d.burglary;
+            break;
+        case "Larceny-Theft":
+            active = d.larceny;
+            break;
+        case "Motor Vehicle Theft":
+            active = d.vehicle;
+            break;
+        case "Violent Crime":
+            active = d.violent;
+            break;
+        case "Property Crime":
+            active = d.property;
+            break;
+        case "Overall Crime":
+            active = d.overall;
+            break;
+        default:
+            active = d.population;
+            break;
+
+    }
+    return active;
+}
+
+function update_caption(opt) {
     var cap = document.getElementById("caption");
-    cap.innerHTML = "Updated.";
+    cap.innerHTML = active_data + " of US Counties";
     return 0;
 }
 
-function update_map() {
+function update_map(opt) {
    max = 0;
    min = 999999999;
    heatmap.clear();
@@ -91,11 +136,15 @@ function update_map() {
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
     .defer(d3.csv, "data2.csv", function(d) {
                   if(d.geoid < 10000) { d.geoid = "0" + d.geoid; }
-		  json.push({"geoid": d.geoid, "county": d.county, "state": d.state, "population": d.population, "male": d.male, "female": d.female, "other": d.other, "asian": d.asian, "black": d.black, "hawaiian": d.hawaiian, "aboriginal": d.aboriginal, "multiple": d.multiple, "white": d.white, "violent": d.violent, "property": d.property, "overall": d.violent + d.property, "murder": d.murder, "rape": d.rape, "robbery": d.robbery, "assault": d.assault, "burglary": d.burglary, "larceny": d.larceny, "motor": d.vehicle, "active": d.violent});
-		  if(parseInt(d.violent) > max) { max = parseInt(d.violent); } if(parseInt(d.violent) < min && parseInt(d.violent) != -1) { min = parseInt(d.violent); } heatmap.set(d.geoid, +acc);
+                  if(d.violent != null && d.violent != "-1" && d.property != null && d.property != "-1") { d.overall = Number(d.violent) + Number(d.property); } else { d.overall = -1; }
+                  d.active = get_active(d, opt);
+                  update_caption(opt);
+		  json.push({"geoid": d.geoid, "county": d.county, "state": d.state, "population": d.population, "male": d.male, "female": d.female, "other": d.other, "asian": d.asian, "black": d.black, "hawaiian": d.hawaiian, "aboriginal": d.aboriginal, "multiple": d.multiple, "white": d.white, "violent": d.violent, "property": d.property, "overall": d.overall, "murder": d.murder, "rape": d.rape, "robbery": d.robbery, "assault": d.assault, "burglary": d.burglary, "larceny": d.larceny, "motor": d.vehicle, "active": d.active});
+		  if(parseInt(d.active) > max) { max = parseInt(d.active); } if(parseInt(d.active) < min && parseInt(d.active) != -1) { min = parseInt(d.active); } heatmap.set(d.geoid, +acc);
                   acc++;
 		})
     .await(ready);
+    //update_ticks();
     return 0;
 }
 
@@ -109,11 +158,9 @@ function update_ticks() {
 }
 
 
-//update_map();
 function ready(error, us) {
   if (error) throw error;
 
-  update_caption();
   update_ticks();
   svg.append("g")
       .attr("id", "map_counties")
@@ -124,7 +171,7 @@ function ready(error, us) {
     .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
       .attr("fill", function(d) { var v = heatmap.get(d.id); 
-          if(json[v] != null) { d.value = json[v].active; d.properties = json[v]; } 
+          if(json[v] != null) { d.value = Number(json[v].active); d.properties = json[v]; } 
           if(d.value != null && d.value != -1) { return color(((d.value * 1.0) / (max * 1.0)) * 90); } else { return "grey"; }})
 	  //.on("mouseover", function(d) { selected = d.id; })
 	  .on("click", function(d) { var obj = d3.select(this);
@@ -156,7 +203,7 @@ function ready(error, us) {
     .append("title")
       .text(function(d) { var info = ""; var data = json[heatmap.get(d.id)];
 		if(d.value != null && d.value != -1) {info = data.county + ", " + data.state + "\n\nPopulation: " + data.population;
-                    if(data.active != data.population) { info = info + "\nActive: "; }
+                    if(data.active != data.population) { info = info + "\n" + active_data + ": " + (Number(data.active)).toFixed(2) + " per capita"; }
                     info = info + "\n\nMale: " + (Number(data.male) * 100).toFixed(2) + "%\nFemale: " + (Number(data.female) * 100).toFixed(2) + "%\n\nAsian: " + (Number(data.asian) * 100).toFixed(2) + "%\nBlack: " + (Number(data.black) * 100).toFixed(2) + "%\nHawaiian or Pacific Islander: " + (Number(data.hawaiian) * 100).toFixed(2) + "%\nNative American: " + (Number(data.aboriginal) * 100).toFixed(2) + "%\nWhite: " + (Number(data.white) * 100).toFixed(2) + "%\nMultiracial: " + (Number(data.multiple) * 100).toFixed(2) + "%\nOther: " + (Number(data.other) * 100).toFixed(2) + "%"; 
                     return info;
                 }
@@ -176,7 +223,6 @@ function ready(error, us) {
       .attr("class", "states")
       .attr("id", "map_states")
       .attr("d", path);
-	  //.on("click", function() { alert("Border clicked. Please click on inside the state."); });
 }
 
 function zoomed() {

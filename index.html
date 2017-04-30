@@ -48,9 +48,9 @@
                 .call(updatableChart);
         });
         function createRadioButtons() {
-            var crimeTypes = ["Population", "Overall", "Violent", "Property", 
+            var crimeTypes = ["Population", "Overall Crime", "Violent Crime", "Property Crime", 
                 "Burglary", "Larceny-Theft", "Motor Vehicle Theft", 
-                "Murder & Nonnegligent Manslaughter", "Revised Rape", 
+                "Murder & Nonnegligent Manslaughter", "Rape", 
                 "Robbery", "Aggravated Assault"];
             var selected = 0;
             var form = d3.select("body").append("form");
@@ -70,6 +70,7 @@
         //Nate, add code for updating your chart here.
         function radioOnClick(toggle_val) {
             updatableChart.data(getCountiesMedianIncome(countyData, "AL")); //this is just in here as dummy data to show how to update the bar chart
+	    update_map(toggle_val);
         }
 
 //SCATTERPLOT

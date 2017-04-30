@@ -33,129 +33,137 @@
 
 <body>
     <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="getters.js"></script>
     <script>
-    var margin = {
+
+
+    var countyData = [];
+    var nationalData = [];
+
+    d3.json("countyData.json", function(d) { 
+        countyData = d; 
+        d3.json("nationalData.json", function(d) {
+            nationalData = d;
+            drawScatter(create_data(nationalData, "violent"));
+        });
+    });
+
+    function drawScatter(data) {
+        console.log(countyData);
+        console.log(nationalData);
+        var margin = {
             top: 20,
             right: 20,
             bottom: 30,
             left: 40
         },
+        
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
+        
+        var x = d3.scaleLinear()
+            .range([0, width]);
 
-    var x = d3.scaleLinear()
-        .range([0, width]);
+        var y = d3.scaleLinear()
+            .range([height, 0]);
 
-    var y = d3.scaleLinear()
-        .range([height, 0]);
+        var xAxis = d3.axisBottom()
+            .scale(x)
+            .ticks(0);
 
-    var xAxis = d3.axisBottom()
-        .scale(x)
-        .ticks(0);
-
-    var yAxis = d3.axisLeft()
-        .scale(y)
-        .ticks(0);
-
-
-    var svg = d3.select("body").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        var yAxis = d3.axisLeft()
+            .scale(y)
+            .ticks(0);
 
 
-    svg.append("text")
-        .attr("x", (width / 2))             
-        .attr("y", 0 - (margin.top / 1000))
-        .attr("text-anchor", "middle")  
-        .style("font", "26px sans-serif")  
-        .text("NAME THIS GRAPH HERE");
+        var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    var data = create_data(10);
 
-    data.forEach(function(d) {
-        d.x = +d.x;
-        d.y = +d.y;
-    });
+        svg.append("text")
+            .attr("x", (width / 2))             
+            .attr("y", 0 - (margin.top / 1000))
+            .attr("text-anchor", "middle")  
+            .style("font", "26px sans-serif")  
+            .text("NAME THIS GRAPH HERE");
 
-    x.domain(d3.extent(data, function(d) {
-        return d.x;
-    }));
-    y.domain(d3.extent(data, function(d) {
-        return d.y;
-    }));
-
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height/2 + ")")
-        .call(xAxis)
-        .append("text")
-        .attr("class", "label")
-        .attr("x", width)
-        .attr("y", -6)
-        .style("text-anchor", "end")
-        .style("font", "24px sans-serif")
-        .text("Crime Rate");
-
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
-        .append("text")
-        .attr("class", "label")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .style("font", "24px sans-serif")
-        .text("Population")
-
-    svg.selectAll(".dot")
-        .data(data)
-        .enter().append("circle")
-        .attr("class", "dot")
-        .attr("r", 3.5)
-        .attr("cx", function(d) {
-            return x(d.x);
-        })
-        .attr("cy", function(d) {
-            return y(d.y);
+        data.forEach(function(d) {
+            d.x = +d.x.value;
+            d.y = +d.y.value;
         });
 
+        x.domain(d3.extent(data, function(d) {
+            return d.x;
+        }));
+
+        y.domain(d3.extent(data, function(d) {
+            return d.y;
+        }));
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height/2 + ")")
+            .call(xAxis)
+            .append("text")
+            .attr("class", "label")
+            .attr("x", width)
+            .attr("y", -6)
+            .style("text-anchor", "end")
+            .style("font", "24px sans-serif")
+            .text("Crime Rate");
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+            .attr("class", "label")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .style("font", "24px sans-serif")
+            .text("Population");
+
+        svg.selectAll(".dot")
+            .data(data)
+            .enter().append("circle")
+            .attr("class", "dot")
+            .attr("r", 3.5)
+            .attr("cx", function(d) {
+                return x(d.x);
+            })
+            .attr("cy", function(d) {
+                return y(d.y);
+            });
+    }
 
 
-
-    function create_data(nsamples) {
-        var x = [];
-        var y = [];
-        var n = nsamples;
-        var noise_factor = 10;
-        var noise = 0;
-        // create x and y values
-        for (var i = 0; i < n; i++) {
-			var yVal = 0;
-			var xVal = 0;
-			noise = noise_factor * Math.random();
-			if (Math.random() < .5) {	
-				yVal = (i / 5 + noise) * -1;
-			}
-			
-			else {
-				yVal = i / 5 + noise;
-			}
-            y.push(yVal);
-            x.push(i + 1);
+    function create_data(data, crime, id) {
+        var x = []; //crime rate
+        var y = []; //population
+        if (typeof id === 'undefined') { 
+            x = getStatesCrimeRate(data, crime);
+            y = getStatesPopulation(data);
+        } else {
+            x = getCountiesCrimeRate(data, id, crime);
+            y = getCountiesPopulation(data, id);
 
         }
-		
-        var data = [];
+        console.log(x);
+        console.log(y);
+
+        var dataOut = [];
         for (i = 0; i < y.length; i++) {
-            data.push({
+            dataOut.push({
                 "y": y[i],
                 "x": x[i]
             })
         }
-        return (data);
+        return dataOut;
     }
+
     </script>
 </body>

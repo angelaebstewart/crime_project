@@ -1,22 +1,17 @@
-
 /*
-
 var countyData;
 var nationalData;
-
 d3.json("countyData.json", function(error, data) {
 		if(error) {
 				console.log(error);
 		}
 		countyData = data;
 });
-
 d3.json("nationalData.json", function(error, data) {
 		if(error) {
 				console.log(error);
 		}
 		nationalData = data;
-
 });*/
 
 
@@ -64,8 +59,8 @@ function getStatesMedianIncome(data) {
 			if (data[s].abbreviation != "US")
 			{
 				var state = data[s];
-				var countyData = {'label' : state["state"], 'value' : state["income"]};
-				incomeData.push(countyData);
+				var stateData = {'label' : state["state"], 'value' : state["income"]};
+				incomeData.push(stateData);
 			}
 	}
 
@@ -74,24 +69,68 @@ function getStatesMedianIncome(data) {
 
 
 function getCountiesCrimeRate(data, id, crime) {
-	/*
-		Nick, add function here.
-		Data is the incoming county data JSON file
-		ID is the state ID
-		Crime is the type of crime (propery, violent, overall, burglary, homicide, etc...)
-		return an array just like getCountiesMeidanIncome where each index's label is a county name and value is crime rate of the crime
-	*/
+	console.log(data);
 	var crimeRateData = [];
+	for (var s in data)
+	{
+		if (data[s].abbreviation == id)
+		{
+			console.log("in if");
+			var county = data[s];
+			var crimeData = {'label' : county["county"], 'value' : county[crime]};
+			console.log(crimeData);
+			crimeRateData.push(crimeData);
+		}
+	}
+
+	return crimeRateData;
+}
+
+function getStatesCrimeRate(data, crime) {
+	var crimeRateData = [];
+
+	for (var s in data)
+	{
+			if (data[s].abbreviation != "US")
+			{
+				var state = data[s];
+				var stateData = {'label' : state["state"], 'value' : state[crime]};
+				crimeRateData.push(stateData);
+			}
+	}
+
+	return crimeRateData;
+}
+
+function getCountiesPopulation(data, id) {
+	var populationData = [];
 
 	for (var s in data)
 	{
 			if (data[s].abbreviation == id)
 			{
 				var county = data[s];
-				var crimeData = {'label' : county["county"], 'value' : county[crime]};
-				crimeRateData.push(crimeData);
+				var population = {'label' : county["county"], 'value' : county["population"]};
+				populationData.push(population);
+				console.log(population);
 			}
 	}
 
-	return crimeRateData;
+	return populationData;
+}
+
+function getStatesPopulation(data) {
+	var populationData = [];
+
+	for (var s in data)
+	{
+			if (data[s].abbreviation != "US")
+			{
+				var state = data[s];
+				var stateData = {'label' : state["state"], 'value' : state["population"]};
+				populationData.push(stateData);
+			}
+	}
+
+	return populationData;
 }

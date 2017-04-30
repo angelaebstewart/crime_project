@@ -18,8 +18,11 @@
     <div id="updatableChart"></div>
     <script>
         var countyData = [];
+        var nationalData = [];
         var updatableChart;
+
         createRadioButtons();
+
         d3.json("countyData.json", function(error, data) {
             if(error) {
                 console.log(error);
@@ -30,6 +33,15 @@
             d3.select('#updatableChart')
                 .call(updatableChart);
         });
+
+        d3.json("nationalData.json", function(error, data) {
+            if(error) {
+                console.log(error);
+            }
+            
+            nationalData = data;
+        });
+
         function createRadioButtons() {
             var crimeTypes = ["Population", "Overall", "Violent", "Property", 
                 "Burglary", "Larceny-Theft", "Motor Vehicle Theft", 
@@ -52,7 +64,8 @@
         }
         //Nate, add code for updating your chart here.
         function radioOnClick(toggle_val) {
-            updatableChart.data(getCountiesMedianIncome(countyData, "AL")); //this is just in here as dummy data to show how to update the bar chart
+            //updatableChart.data(getStatesMedianIncome(nationalData)); //this is just in here as dummy data to show how to update the bar chart
+            updatableChart.highlightBar(0);
         }
         
         //on double click in choropleth.js, zoomed

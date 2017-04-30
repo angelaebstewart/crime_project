@@ -29,7 +29,7 @@
             }
             
             countyData = data;
-            updatableChart = barChart().width(800).height(450).data(getSexData(countyData, "16079")); //change width and height here
+            updatableChart = barChart().width(800).height(450).data(getCountiesMedianIncome(countyData, "AL")); //change width and height here
             d3.select('#updatableChart')
                 .call(updatableChart);
         });
@@ -40,6 +40,9 @@
             }
             
             nationalData = data;
+            /*updatableChart = barChart().width(800).height(450).data(getRaceData(nationalData, "AL")); //change width and height here
+            d3.select('#updatableChart')
+                .call(updatableChart);*/
         });
 
         function createRadioButtons() {
@@ -64,8 +67,8 @@
         }
         //Nate, add code for updating your chart here.
         function radioOnClick(toggle_val) {
-            //updatableChart.data(getStatesMedianIncome(nationalData)); //this is just in here as dummy data to show how to update the bar chart
-            updatableChart.highlightBar(0);
+            updatableChart.data(getStatesMedianIncome(nationalData)); //this is just in here as dummy data to show how to update the bar chart
+            //updatableChart.highlightBar('bar_1107');
         }
         
         //on double click in choropleth.js, zoomed

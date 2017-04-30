@@ -1,4 +1,6 @@
+
 /*
+
 var countyData;
 var nationalData;
 
@@ -14,7 +16,9 @@ d3.json("nationalData.json", function(error, data) {
 				console.log(error);
 		}
 		nationalData = data;
+
 });*/
+
 
 function getSexData(data, id) {
 	var sexData = [
@@ -52,16 +56,42 @@ function getCountiesMedianIncome(data,id) {
 	return incomeData;
 }
 
-function getStatesMedianIncome(data,id) {
-	console.log("in getStatesMedianIncome");
+function getStatesMedianIncome(data) {
+	var incomeData = [];
+
+	for (var s in data)
+	{
+			if (data[s].abbreviation != "US")
+			{
+				var state = data[s];
+				var countyData = {'label' : state["state"], 'value' : state["income"]};
+				incomeData.push(countyData);
+			}
+	}
+
+	return incomeData;
 }
+
 
 function getCountiesCrimeRate(data, id, crime) {
 	/*
-		Nick, add function here. 
+		Nick, add function here.
 		Data is the incoming county data JSON file
 		ID is the state ID
 		Crime is the type of crime (propery, violent, overall, burglary, homicide, etc...)
 		return an array just like getCountiesMeidanIncome where each index's label is a county name and value is crime rate of the crime
 	*/
+	var crimeRateData = [];
+
+	for (var s in data)
+	{
+			if (data[s].abbreviation == id)
+			{
+				var county = data[s];
+				var crimeData = {'label' : county["county"], 'value' : county[crime]};
+				crimeRateData.push(crimeData);
+			}
+	}
+
+	return crimeRateData;
 }

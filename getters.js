@@ -16,22 +16,36 @@ d3.json("nationalData.json", function(error, data) {
 
 
 function getSexData(data, id) {
-	var sexData = [
-			{'label' : 'Female', 'value' : data[id].female},
-            {'label' : 'Male', 'value' : data[id].male}];
-
+	var sexData;
+	for (var s in data) {
+		console.log(data[s]);
+		if (data[s].state == id) {
+			sexData = [
+			{'label' : 'Female', 'value' : data[s].female},
+            {'label' : 'Male', 'value' : data[s].male}];
+            break;
+		}
+	}
+	
 	return sexData;
 }
 
 function getRaceData(data, id) {
-	var raceData = [
-			{'label' : 'Asian', 'value' : data[id].asian},
-            {'label' : 'Black', 'value' : data[id].black},
-            {'label' : 'Hawaiian', 'value' : data[id].hawaiian},
-            {'label' : 'Mixed', 'value' : data[id].mixed},
-            {'label' : 'Native American', 'value' : data[id].native},
-            {'label' : 'Other', 'value' : data[id].other},
-            {'label' : 'White', 'value' : data[id].white}];
+	var raceData;
+	for (var s in data) {
+		if (data[s].state == id) {
+			raceData = [
+			{'label' : 'Asian', 'value' : data[s].asian},
+            {'label' : 'Black', 'value' : data[s].black},
+            {'label' : 'Hawaiian', 'value' : data[s].hawaiian},
+            {'label' : 'Multiracial', 'value' : data[s].mixed},
+            {'label' : 'Native American', 'value' : data[s].native},
+            {'label' : 'Other', 'value' : data[s].other},
+            {'label' : 'White', 'value' : data[s].white}];
+            break;
+		}
+	}
+
 	return raceData;
 }
 
@@ -40,7 +54,7 @@ function getCountiesMedianIncome(data,id) {
 
 	for (var s in data)
 	{
-	    if (data[s].abbreviation == id)
+	    if (data[s].state == id)
 			{
 				var county = data[s];
 				var countyData = {'label' : county["county"], 'value' : county["income"], 'geoid' : county["geoid"]};

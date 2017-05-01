@@ -600,6 +600,15 @@ function zoomed() {
           .style("font", "24px sans-serif")
           .text("Crime Rate");
 
+        svg.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("x", -height/2)
+          .attr("y", -5)
+          .style("text-anchor", "middle")
+          .attr("fill", "black")
+          .style("font", "24px sans-serif")
+          .text("Population");
+
         /*svg.append("text")
           .attr("transform", "rotate(-90)")
           .attr("y", 0 – margin.left)

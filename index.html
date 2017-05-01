@@ -71,7 +71,8 @@ When the user zooms in a particular state, the bar charts will update to show th
 </div>
 <div id="updatableChart"></div>
 <br/><br/>
-<svg id="svg2" width="960" height="600"></svg>
+<div id="scatter"></div>
+<!--<svg id="svg2" width="960" height="600"></svg>-->
 <div id="interesting_finds" style="text-align: center; margin: auto; width: 500px;">
 <p>
 <h3>Interesting Insights</h3>
@@ -473,7 +474,7 @@ function zoomed() {
             .ticks(0);
 
 
-        var svg = d3.select("body").append("svg")
+        var svg = d3.select("#scatter").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")

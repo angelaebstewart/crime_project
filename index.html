@@ -135,7 +135,7 @@ var svg = d3.select("#svg"),
     height = +svg.attr("height");
 
 var clicked = 0;
-
+var current_state;
 var selected = "";
 
 var max = 0;
@@ -337,6 +337,7 @@ function ready(error, us) {
 	  .on("dblclick", function(d) { clicked++;
               if(clicked % 3 != 0) {
                   var data = json[heatmap.get(d.id)];
+				  current_state = data.state;
                   context_change(raceChart, sexChart, incomeChart, data.state);
               }
               //var state;

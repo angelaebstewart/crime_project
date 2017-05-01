@@ -1,24 +1,6 @@
-/*
-var countyData;
-var nationalData;
-d3.json("countyData.json", function(error, data) {
-		if(error) {
-				console.log(error);
-		}
-		countyData = data;
-});
-d3.json("nationalData.json", function(error, data) {
-		if(error) {
-				console.log(error);
-		}
-		nationalData = data;
-});*/
-
-
 function getSexData(data, id) {
 	var sexData;
 	for (var s in data) {
-		console.log(data[s]);
 		if (data[s].state == id) {
 			sexData = [
 			{'label' : 'Female', 'value' : data[s].female},
@@ -83,15 +65,20 @@ function getStatesMedianIncome(data) {
 
 
 function getCountiesCrimeRate(data, id, crime) {
-	console.log(data);
 	var crimeRateData = [];
 	for (var s in data)
 	{
 		if (data[s].abbreviation == id)
 		{
 			var county = data[s];
-			var crimeData = {'label' : county["county"], 'value' : county[crime]};
-			console.log(crimeData);
+			if (crime == "overall") {
+				var crimeData = {'label' : county["county"], 'value' : (parseInt(county["violent"]) + parseInt(county["property"]))};
+			}
+
+			else {
+				var crimeData = {'label' : county["county"], 'value' : county[crime]};
+			}
+			
 			crimeRateData.push(crimeData);
 		}
 	}
@@ -107,7 +94,13 @@ function getStatesCrimeRate(data, crime) {
 			if (data[s].abbreviation != "US")
 			{
 				var state = data[s];
-				var stateData = {'label' : state["state"], 'value' : state[crime]};
+				if (crime == "overall") {
+					var stateData = {'label' : state["state"], 'value' : (parseInt(state["violent"]) + parseInt(state["property"]))};
+				}
+				else {
+					var stateData = {'label' : state["state"], 'value' : state[crime]};	
+				}
+				
 				crimeRateData.push(stateData);
 			}
 	}
@@ -125,7 +118,6 @@ function getCountiesPopulation(data, id) {
 				var county = data[s];
 				var population = {'label' : county["county"], 'value' : county["population"]};
 				populationData.push(population);
-				console.log(population);
 			}
 	}
 

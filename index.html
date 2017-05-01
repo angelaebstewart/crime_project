@@ -14,12 +14,60 @@
 }
 
 </style>
+<div id="tutorial" style="float: left;">
+<button id="tutorial_button" onclick="show_tutorial()">Tutorial</button>
+<div id="tutorial_content" style="display: none; border: solid; border-width: thin;">
+Click any county on the map to highlight it.
+<br/>
+Doubleclick on a county to zoom in on it.
+<br/>
+Doubleclicking will cause the bar charts and scatterplot to display data on the state the selected county is in.
+</br>
+Click and drag on the map to pan.
+<br/>
+Holding the mouse over a county will show a tooltip with information about the county.
+<br/><br/>
+Task 1: Find the rate of property crime of your home county.
+<br/>
+Task 2: Find how much more/less violent crime per capita is committed in Texas than Hawaii.
+<br/>
+Task 3: Find 3 states that have high rates of burglary.
+</div>
+</div>
+
+<div id="project_description" style="text-align: center; margin: auto; width: 500px;">
+<p>
+<h3>Project Overview</h3>
+Currently, sociologists often rely on tables to understand trends in their area of research. This can become incredibly tedious and complex, especially in an area like criminology which is at the intersection of studies on race, class, and the criminal justice system. In order to help present a more centralized place for this kind of information, we have created a visualization of the FBI Uniform Crime Report of 2014 along with accompanying demographic data from census estimates for 2014.
+<br/><br/>
+Our target users are undergraduate students studying criminology for the first time. Their professors are also important users because the visualization must fit within the course's content. We feel this tool is best suited for beginners because diving into data with only tables can be especially confusing for those just getting started (i.e. undergraduates). We also believe the questions our users want answered are also suited for the general population, though more focus is placed on satisfying learning outcomes for a criminology course.
+<br/><br/>
+In our conversations with an undergraduate sociology professor at Hanover College, we have found a couple broad questions users want answered:
+What does crime look like in the US? 
+Are there demographic commonalities related to reported crime?
+<br/><br/>
+This visualization attempts to facilitate student exploration as they answer those questions.
+</p>
+<br/>
+<p>
+<h3>Visualization Walkthrough</h3>
+The first element of our visualization the user will see is the interactive choropleth. The user can mouseover for more info on a county, zoom in for detailed information on a single state, and pan around the map (which is especially useful for zoomed views). We chose to present a choropleth because it provides a familiar representation of the data for our users, organizes the data spatially, and by its nature implies some level of interactivity to get our users engaged.
+<br/><br/>
+A panel with radio buttons allows the student to select different data to view on the map and following section of the visualization. At first the user is presented a choropleth of the population of the US, but by selecting a different option in the panel they can see the crime rates of each county as a choropleth.
+</p>
+</div>
 <div id="map">
-<h4>Search for a specific county:</h4>
-<div id="map_search" width="960" style="border: solid; border-width: thin; width: 500px;"></div>
+<!--<h4>Search for a specific county:</h4>
+<div id="map_search" width="960" style="border: solid; border-width: thin; width: 500px;"></div><br/>-->
 <svg id="svg" width="960" height="600"></svg>
 </div>
 <br/><br/>
+<div id="chart_description" style="text-align: center; margin: auto; width: 500px;">
+<p>
+The second element of our visualization is a collection of bar charts and a scatterplot showing aggregated information. If a student is zoomed out to the scope of the entire nation, the bar charts show demographic information on sex, race, and median income for the country. The scatterplot displays the relationship between the population and total rate of crime for each state. As stated before, selecting a different type of data in the radio button panel will alter the view presented both in the map and in the scatterplot. The scatterplot will change to a relationship between the population and crime rate of whichever crime type is selected. If the "Population" radio button is selected, the scatterplot returns to its default view.
+<br/><br/>
+When the user zooms in a particular state, the bar charts will update to show the demographics for the 
+</div>
 <div id="updatableChart"></div>
 <br/><br/>
 <svg id="svg2" width="960" height="600"></svg>
@@ -35,6 +83,18 @@
 	}
 </style>
 <script>
+var tutorial_clicks = 0;
+function show_tutorial() {
+	tutorial_clicks++;
+	var tut = document.getElementById("tutorial_content");
+	if(tutorial_clicks % 2 != 0) {
+		tut.setAttribute("style", "border: solid; border-width: thin; width: 500px;");
+	}
+	else {
+		tut.setAttribute("style", "display: none;");
+	}
+	return 0;
+}	
 
 //CHOROPLETH DATA
 var svg = d3.select("#svg"),
@@ -61,17 +121,22 @@ var zoom = d3.zoom()
 var json = [];
 var acc = 0;
 
-var map_div = document.getElementById("map_search");
+/*var map_div = document.getElementById("map_search");
 var searchbox = completely(map_div);
 searchbox.options = [];
-
+//var search_div = document.getElementById("map_search").firstChild.firstChild.innerHTML;
+var text_div = document.querySelectorAll('[style="position: absolute; visibility: hidden; outline: 0px none; margin: 0px; padding: 0px; text-align: left; font-size: 16px; font-family: sans-serif; background-color: rgb(255, 255, 255); z-index: 100; cursor: default; border-style: solid; border-width: 1px; border-color: rgb(170, 170, 170); overflow-x: hidden; white-space: pre; overflow-y: scroll;"]')[0];
+text_div.setAttribute("id", "county_selector");
+var search_div = document.querySelectorAll('[spellcheck="false"]')[1];
+search_div.setAttribute("onKeydown", "Javascript: if (event.keyCode==13) alert(document.getElementById(\"county_selector\").innerHTML);");
+*/
 d3.queue()
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
     .defer(d3.csv, "data2.csv", function(d) {
                   if(d.geoid < 10000) { d.geoid = "0" + d.geoid; }
                   if(d.violent != null && d.violent != "-1" && d.property != null && d.property != "-1") { d.overall = Number(d.violent) + Number(d.property); } else { d.overall = -1; }
 		  json.push({"geoid": d.geoid, "county": d.county, "state": d.state, "population": d.population, "male": d.male, "female": d.female, "other": d.other, "asian": d.asian, "black": d.black, "hawaiian": d.hawaiian, "aboriginal": d.aboriginal, "multiple": d.multiple, "white": d.white, "violent": d.violent, "property": d.property, "murder": d.murder, "rape": d.rape, "robbery": d.robbery, "assault": d.assault, "burglary": d.burglary, "larceny": d.larceny, "motor": d.vehicle, "overall": d.overall, "active": d.population});
-		  searchbox.options.push(d.county + ", " + d.state);
+		  //searchbox.options.push(d.county + ", " + d.state);
                   if(parseInt(d.population) > max) { max = parseInt(d.population); } if(parseInt(d.population) < min && parseInt(d.population) != -1) { min = parseInt(d.population); } heatmap.set(d.geoid, +acc);
                   acc++;
 		})
@@ -214,6 +279,9 @@ function ready(error, us) {
     .selectAll("path")
     .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
+	  .attr("id", function(d) { var v = heatmap.get(d.id);
+		  if(json[v] != null) { return json[v].county + ", " + json[v].state; }
+		  else { return d.id; } })
       .attr("fill", function(d) { var v = heatmap.get(d.id); 
           if(json[v] != null) { d.value = Number(json[v].active); d.properties = json[v]; } 
           if(d.value != null && d.value != -1) { return color(((d.value * 1.0) / (max * 1.0)) * 90); } else { return "grey"; }})
@@ -322,7 +390,6 @@ function zoomed() {
               }
 
               nationalData = data;
-              console.log(nationalData);
               
               sexChart = barChart().width(800).height(450).data(getSexData(nationalData, "United States"));
               d3.select('#updatableChart').call(sexChart);
@@ -334,7 +401,7 @@ function zoomed() {
               d3.select('#updatableChart').call(incomeChart);
 
 
-              drawScatter(create_data(nationalData, "violent"));
+              drawScatter(create_data(nationalData, "overall"));
 
 
             });
@@ -348,7 +415,7 @@ function zoomed() {
                 "Murder & Nonnegligent Manslaughter", "Rape", 
                 "Robbery", "Aggravated Assault"];
             var selected = 0;
-            var form = d3.select("body").append("form");
+            var form = d3.select("#map_search").append("form").attr("style", "float: left;");
             var labels = form.selectAll("span")
                 .data(crimeTypes)
                 .enter()
@@ -459,7 +526,7 @@ function zoomed() {
             .attr("cy", function(d) {
                 return y(d.y);
             })
-            .on("mouseover", function(d) { console.log(d.label);
+            .on("mouseover", function(d) { //console.log(d.label);
                 d3.select(this).attr("fill", d3.rgb(0, 62, 31)); 
                 var coordinates = d3.mouse(this); 
                 focus.select("text").attr("x", coordinates[0]).attr("dy", coordinates[1] - 5).text("some text"); focus.style("display", null);

@@ -72,7 +72,7 @@ function barChart() {
                 .attr('class', 'display-bar')
                 .attr("id", function(d,i) {
                     if( typeof d.geoid !== 'undefined' ) {
-                        console.log(d.geoid);
+                        //console.log(d.geoid);
                         return 'bar_' + d.geoid;} else {
                             return 'bar_' + i;
                         }

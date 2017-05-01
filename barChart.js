@@ -82,7 +82,15 @@ function barChart() {
                 .attr('x', function(d, i) {return (i * barSpacing) + margin.left + barPadding;})
                 .attr('height', function (d) { return d.value * heightScale; })
                 .on("mouseover", function(d) {d3.select(this).attr("fill", d3.rgb(0, 62, 31)); var coordinates = d3.mouse(this); focus.select("text").attr("x", coordinates[0]).attr("dy", coordinates[1] - 5).text(d.value); focus.style("display", null);})
-                .on("mouseout", function() {d3.select(this).attr("fill",  d3.rgb(68, 143, 163)); focus.style("display", "none");});
+                .on("mouseout", function() {d3.select(this).attr("fill",  d3.rgb(68, 143, 163)); focus.style("display", "none");})
+				.append("title").text(function (d) {
+					if(d.value < 10) {
+						return d.label + "\n" + (Number(d.value) * 100).toFixed(2) + "%";
+					}
+					else {
+						return d.label + "\n$" + d.value;
+					}
+					});
            
             var focus = svg.append("title")
                 .attr("class", "focus")

@@ -393,8 +393,9 @@ function context_change(race, sex, income, state_selected) {
     return 0;
 }
 
-function county_highlight(geoid) {
-
+function county_highlight(geoid, income) {
+  console.log("county highlight");
+  income.highlightBar(geoid);
     return 0;
 }
 

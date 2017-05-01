@@ -1,3 +1,5 @@
+var charts_charted = 0;
+
 function barChart() {
 
 
@@ -37,6 +39,7 @@ function barChart() {
             var dom = d3.select(this);
             var svg = dom.append('svg')
                 .attr('class', 'bar-chart')
+				.attr('id', function() { charts_charted++; })
                 .attr('height', height + margin.top + margin.bottom)
                 .attr('width', width + margin.left + margin.right)
                 .style('fill', fillColor);
@@ -81,8 +84,8 @@ function barChart() {
                 .attr('width', barWidth)
                 .attr('x', function(d, i) {return (i * barSpacing) + margin.left + barPadding;})
                 .attr('height', function (d) { return d.value * heightScale; })
-                //.on("mouseover", function(d) {d3.select(this).attr("fill", d3.rgb(0, 62, 31)); var coordinates = d3.mouse(this); focus.select("text").attr("x", coordinates[0]).attr("dy", coordinates[1] - 5).text(d.value); focus.style("display", null);})
-                //.on("mouseout", function() {d3.select(this).attr("fill",  d3.rgb(68, 143, 163)); focus.style("display", "none");})
+                .on("mouseover", function(d) {d3.select(this).attr("fill", d3.rgb(0, 62, 31))})
+                .on("mouseout", function(d) {d3.select(this).attr("fill", d3.rgb(68, 143, 163))})
 				.append('title')
                 .attr('class', 'tooltip')
                 .text(function (d) {
@@ -141,7 +144,7 @@ function barChart() {
                 .style("text-anchor", "middle")
                 .attr("fill", "black")
                 .style("font", "24px sans-serif")
-                .text("Percent");
+                .text(function() { if(charts_charted % 3 == 0) { return "US Dollars"; } else { return "Percent"; } });
 
             svg.append("g")
                 .attr("class", "x-axis")

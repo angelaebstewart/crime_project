@@ -13,6 +13,11 @@
   stroke-linejoin: round;
 }
 
+.dot {
+    stroke: #448fa3;
+    fill: #448fa3;
+}
+
 </style>
 <div id="tutorial" style="float: left;">
 <button id="tutorial_button" onclick="show_tutorial()">Tutorial</button>
@@ -397,8 +402,8 @@ function context_change(race, sex, income, state_selected) {
 }
 
 function county_highlight(geoid, income) {
-  console.log("county highlight");
-  income.highlightBar(geoid);
+  //console.log("county highlight");
+  //income.highlightBar(geoid);
     return 0;
 }
 
@@ -557,13 +562,6 @@ function zoomed() {
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-        svg.append("text")
-            .attr("x", (width / 2))             
-            .attr("y", 0 - (margin.top / 1000))
-            .attr("text-anchor", "middle")  
-            .style("font", "26px sans-serif")  
-            .text("NAME THIS GRAPH HERE");
-
         data.forEach(function(d) {
             d.x = +d.x.value;
             d.y = +d.y.value;
@@ -593,15 +591,32 @@ function zoomed() {
 
         svg.append("g")
             .attr("class", "y axis")
-            .call(yAxis)
+            .call(yAxis);
+
+        svg.append("text")
+          .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom) + ")")
+          .style("text-anchor", "middle")
+          .attr("fill", "black")
+          .style("font", "24px sans-serif")
+          .text("Crime Rate");
+
+        /*svg.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0 – margin.left)
+          .attr("x",0 - (height / 2))
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .text("Value");*/
+            /*
             .append("text")
             .attr("class", "label")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
+            //.attr("transform", "rotate(-90)")
+            //.attr("y", 10)
+            //.attr("x", 10)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
             .style("font", "24px sans-serif")
-            .text("Population");
+            .text("Population");*/
 
         svg.selectAll(".dot")
             .data(data)
@@ -613,15 +628,15 @@ function zoomed() {
             })
             .attr("cy", function(d) {
                 return y(d.y);
-            })
-            .on("mouseover", function(d) { //console.log(d.label);
+            });
+            /*.on("mouseover", function(d) { //console.log(d.label);
                 d3.select(this).attr("fill", d3.rgb(0, 62, 31)); 
                 var coordinates = d3.mouse(this); 
                 focus.select("text").attr("x", coordinates[0]).attr("dy", coordinates[1] - 5).text("some text"); focus.style("display", null);
             })
-            .on("mouseout", function() {d3.select(this).attr("fill",  d3.rgb(68, 143, 163)); focus.style("display", "none");});
+            .on("mouseout", function() {d3.select(this).attr("fill",  d3.rgb(68, 143, 163)); focus.style("display", "none");});*/
 
-        var focus = svg.append("g")
+        /*var focus = svg.append("g")
             .attr("class", "focus")
             .style("fill", "black")
             .style("display", "none");
@@ -629,7 +644,7 @@ function zoomed() {
         focus.append("text")
             .attr("x", 9)
             .attr("dy", ".35em")
-            .style("text-anchor", "middle");
+            .style("text-anchor", "middle");*/
     }
 
 

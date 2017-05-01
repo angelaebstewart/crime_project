@@ -59,6 +59,7 @@ A panel with radio buttons allows the student to select different data to view o
 <div id="map">
 <!--<h4>Search for a specific county:</h4>
 <div id="map_search" width="960" style="border: solid; border-width: thin; width: 500px;"></div><br/>-->
+<div id="map_search" width="960" style="width: 500px;"></div><br/>
 <svg id="svg" width="960" height="600"></svg>
 </div>
 <br/><br/>
@@ -66,11 +67,20 @@ A panel with radio buttons allows the student to select different data to view o
 <p>
 The second element of our visualization is a collection of bar charts and a scatterplot showing aggregated information. If a student is zoomed out to the scope of the entire nation, the bar charts show demographic information on sex, race, and median income for the country. The scatterplot displays the relationship between the population and total rate of crime for each state. As stated before, selecting a different type of data in the radio button panel will alter the view presented both in the map and in the scatterplot. The scatterplot will change to a relationship between the population and crime rate of whichever crime type is selected. If the "Population" radio button is selected, the scatterplot returns to its default view.
 <br/><br/>
-When the user zooms in a particular state, the bar charts will update to show the demographics for the 
+When the user zooms in a particular state, the bar charts will update to show the demographics for the state selected. For example, if a user zooms in on Indiana with the "Property Crime" radio button selected, the bar charts will show sex and race demographics for the state as well as the median income for all counties in Indiana. The scatterplot will show the relationship between the population and property crime rates of each county in Indiana. 
 </div>
 <div id="updatableChart"></div>
 <br/><br/>
 <svg id="svg2" width="960" height="600"></svg>
+<div id="interesting_finds" style="text-align: center; margin: auto; width: 500px;">
+<p>
+<h3>Interesting Insights</h3>
+<br/><br/>
+<br/><br/>
+<br/><br/>
+</p>
+<br/>
+</div>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script src="https://d3js.org/topojson.v2.min.js"></script>

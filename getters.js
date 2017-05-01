@@ -68,10 +68,12 @@ function getCountiesCrimeRate(data, id, crime) {
 	var crimeRateData = [];
 	for (var s in data)
 	{
-		if (data[s].abbreviation == id)
+		if (data[s].state == id)
 		{
 			var county = data[s];
 			if (crime == "overall") {
+				//console.log(parseInt(county["violent"]));
+				//console.log(parseInt(county["property"]));
 				var crimeData = {'label' : county["county"], 'value' : (parseInt(county["violent"]) + parseInt(county["property"]))};
 			}
 
@@ -79,6 +81,7 @@ function getCountiesCrimeRate(data, id, crime) {
 				var crimeData = {'label' : county["county"], 'value' : county[crime]};
 			}
 			
+			//console.log(crimeData);
 			crimeRateData.push(crimeData);
 		}
 	}
@@ -113,7 +116,7 @@ function getCountiesPopulation(data, id) {
 
 	for (var s in data)
 	{
-			if (data[s].abbreviation == id)
+			if (data[s].state == id)
 			{
 				var county = data[s];
 				var population = {'label' : county["county"], 'value' : county["population"]};

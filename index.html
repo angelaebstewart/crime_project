@@ -381,6 +381,8 @@ function context_change(race, sex, income, state_selected) {
   race.data(getRaceData(nationalData, state_selected));
   sex.data(getSexData(nationalData, state_selected));
   income.data(getCountiesMedianIncome(countyData, state_selected));
+  document.getElementById('scatter').innerHTML = '';
+  drawScatter(create_data(countyData, "overall", state_selected));
 
 
     return 0;
@@ -585,6 +587,7 @@ function zoomed() {
             x = getStatesCrimeRate(data, crime);
             y = getStatesPopulation(data);
         } else {
+            console.log("in else");
             x = getCountiesCrimeRate(data, id, crime);
             y = getCountiesPopulation(data, id);
 

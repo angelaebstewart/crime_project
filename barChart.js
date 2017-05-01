@@ -81,9 +81,11 @@ function barChart() {
                 .attr('width', barWidth)
                 .attr('x', function(d, i) {return (i * barSpacing) + margin.left + barPadding;})
                 .attr('height', function (d) { return d.value * heightScale; })
-                .on("mouseover", function(d) {d3.select(this).attr("fill", d3.rgb(0, 62, 31)); var coordinates = d3.mouse(this); focus.select("text").attr("x", coordinates[0]).attr("dy", coordinates[1] - 5).text(d.value); focus.style("display", null);})
-                .on("mouseout", function() {d3.select(this).attr("fill",  d3.rgb(68, 143, 163)); focus.style("display", "none");})
-				.append("title").text(function (d) {
+                //.on("mouseover", function(d) {d3.select(this).attr("fill", d3.rgb(0, 62, 31)); var coordinates = d3.mouse(this); focus.select("text").attr("x", coordinates[0]).attr("dy", coordinates[1] - 5).text(d.value); focus.style("display", null);})
+                //.on("mouseout", function() {d3.select(this).attr("fill",  d3.rgb(68, 143, 163)); focus.style("display", "none");})
+				.append('title')
+                .attr('class', 'tooltip')
+                .text(function (d) {
 					if(d.value < 10) {
 						return d.label + "\n" + (Number(d.value) * 100).toFixed(2) + "%";
 					}
@@ -92,10 +94,10 @@ function barChart() {
 					}
 					});
            
-            var focus = svg.append("title")
+            /*var focus = svg.append("title")
                 .attr("class", "focus")
                 .style("fill", "black")
-                .style("display", "none");
+                .style("display", "none");*/
                 
             /*focus.append("text")
                 .attr("x", 9)
@@ -206,6 +208,9 @@ function barChart() {
                 var updateBarText = svg.selectAll('.bar-label')
                     .data(data);
 
+                var updateToolTips = svg.selectAll('title.tooltip')
+                    .data(data);
+
 
                 if (addXLabels) {
                     updateBarText
@@ -231,6 +236,15 @@ function barChart() {
                     .attr('y', function(d) { return height - (d.value * heightScale);}) //WAS 0
                     .attr('height', function(d) { return d.value * heightScale; });
 
+                updateToolTips.text(function (d) {
+                    if(d.value < 10) {
+                        return d.label + "\n" + (Number(d.value) * 100).toFixed(2) + "%";
+                    }
+                    else {
+                        return d.label + "\n$" + d.value;
+                    }
+                    });
+
                 update.enter()
                     .append('rect')
                     .attr('class', 'display-bar')
@@ -250,6 +264,18 @@ function barChart() {
                     .delay(function(d, i) { return (data.length - i) * 40; })
                     .attr('height', function(d) { return d.value * heightScale; })
                     .style('opacity', 1);
+
+                updateToolTips.enter().append('title')
+                    .attr('class', 'tooltip')
+                    .text(function (d) {
+                    if(d.value < 10) {
+                        return d.label + "\n" + (Number(d.value) * 100).toFixed(2) + "%";
+                    }
+                    else {
+                        return d.label + "\n$" + d.value;
+                    }
+                    });
+
 
                 if (addXLabels) {
                     updateBarText.enter()
@@ -285,6 +311,8 @@ function barChart() {
                     .style('opacity', 0)
                     .attr('x', 0)
                     .remove();
+
+                updateToolTips.exit().remove();
             }
 
         });

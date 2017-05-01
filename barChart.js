@@ -1,3 +1,5 @@
+var charts_charted = 0;
+
 function barChart() {
 
 
@@ -37,6 +39,7 @@ function barChart() {
             var dom = d3.select(this);
             var svg = dom.append('svg')
                 .attr('class', 'bar-chart')
+				.attr('id', function() { charts_charted++; })
                 .attr('height', height + margin.top + margin.bottom)
                 .attr('width', width + margin.left + margin.right)
                 .style('fill', fillColor);
@@ -141,7 +144,7 @@ function barChart() {
                 .style("text-anchor", "middle")
                 .attr("fill", "black")
                 .style("font", "24px sans-serif")
-                .text("Percent");
+                .text(function() { if(charts_charted % 3 == 0) { return "US Dollars"; } else { return "Percent"; } });
 
             svg.append("g")
                 .attr("class", "x-axis")

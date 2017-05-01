@@ -277,7 +277,7 @@ function ready(error, us) {
 	  .on("dblclick", function(d) { clicked++;
               if(clicked % 3 != 0) {
                   var data = json[heatmap.get(d.id)];
-                  context_change(updatableChart, data.state);
+                  context_change(raceChart, sexChart, incomeChart, data.state);
               }
               //var state;
 		/*for(var j = 0; j < json.length; j++) { 
@@ -317,15 +317,11 @@ function ready(error, us) {
       .attr("d", path);
 }
 
-function context_change(income, state_selected) {
+function context_change(race, sex, income, state_selected) {
+  race.data(getRaceData(nationalData, state_selected));
+  sex.data(getSexData(nationalData, state_selected));
+  income.data(getCountiesMedianIncome(countyData, state_selected));
 
-    var counties = [];
-    for(var j = 0; j < json.length; j++) { 
-        if(json[j].state == state_selected) {
-	    counties.push(json[j]);
-	}
-    }
-    income.data(getCountiesMedianIncome(counties, state_selected));
 
     return 0;
 }
@@ -344,25 +340,49 @@ function zoomed() {
   	svg.attr("transform", d3.event.transform);
   }
 }
-
-
-
-
-
-
+        //BAR AND SCATTER
         var countyData = [];
-        var updatableChart;
+        var nationalData = [];
+        var sexChart;
+        var raceChart;
+        var incomeChart;
+        var crimeChart;
+
         createRadioButtons();
+        
         d3.json("countyData.json", function(error, data) {
             if(error) {
                 console.log(error);
             }
             
             countyData = data;
-            updatableChart = barChart().width(800).height(450).data(getRaceData(countyData, "16079")); //change width and height here
-            d3.select('#updatableChart')
-                .call(updatableChart);
+
+            d3.json("nationalData.json", function(error, data) {
+              if(error) {
+                console.log(error);
+              }
+
+              nationalData = data;
+              console.log(nationalData);
+              
+              sexChart = barChart().width(800).height(450).data(getSexData(nationalData, "United States"));
+              d3.select('#updatableChart').call(sexChart);
+
+              raceChart = barChart().width(800).height(450).data(getRaceData(nationalData, "United States"));
+              d3.select('#updatableChart').call(raceChart);
+
+              incomeChart = barChart().width(800).height(450).data(getStatesMedianIncome(nationalData));
+              d3.select('#updatableChart').call(incomeChart);
+
+
+              drawScatter(create_data(nationalData, "violent"));
+
+
+            });
+
         });
+
+
         function createRadioButtons() {
             var crimeTypes = ["Population", "Overall Crime", "Violent Crime", "Property Crime", 
                 "Burglary", "Larceny-Theft", "Motor Vehicle Theft", 
@@ -390,155 +410,135 @@ function zoomed() {
         }
 
 //SCATTERPLOT
-var margin = {
-		top: 20,
-		right: 20,
-		bottom: 30,
-		left: 40
-	},
-	width = 960 - margin.left - margin.right,
-	height = 500 - margin.top - margin.bottom;
+    function drawScatter(data) {
+        var margin = {
+            top: 20,
+            right: 20,
+            bottom: 30,
+            left: 40
+        },
+        
+        width = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+        
+        var x = d3.scaleLinear()
+            .range([0, width]);
 
-var x = d3.scaleLinear()
-	.range([0, width]);
+        var y = d3.scaleLinear()
+            .range([height, 0]);
 
-var y = d3.scaleLinear()
-	.range([height, 0]);
+        var xAxis = d3.axisBottom()
+            .scale(x)
+            .ticks(0);
 
-var xAxis = d3.axisBottom()
-	.scale(x)
-	.ticks(0);
-
-var yAxis = d3.axisLeft()
-	.scale(y)
-	.ticks(0);
-
-
-var svg2 = d3.select("#svg2")
-	.attr("width", width + margin.left + margin.right)
-	.attr("height", height + margin.top + margin.bottom)
-	.append("g")
-	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        var yAxis = d3.axisLeft()
+            .scale(y)
+            .ticks(0);
 
 
-svg2.append("text")
-	.attr("x", (width / 2))             
-	.attr("y", 0 - (margin.top / 1000))
-	.attr("text-anchor", "middle")  
-	.style("font", "26px sans-serif")  
-	.text("NAME THIS GRAPH HERE");
+        var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var data = create_data(1000);
 
-data.forEach(function(d) {
-	d.x = +d.x;
-	d.y = +d.y;
-	d.yhat = +d.yhat;
-});
+        svg.append("text")
+            .attr("x", (width / 2))             
+            .attr("y", 0 - (margin.top / 1000))
+            .attr("text-anchor", "middle")  
+            .style("font", "26px sans-serif")  
+            .text("NAME THIS GRAPH HERE");
 
-var line = d3.line()
-	.x(function(d) {
-		return x(d.x);
-	})
-	.y(function(d) {
-		return y(d.yhat);
-	});
+        data.forEach(function(d) {
+            d.x = +d.x.value;
+            d.y = +d.y.value;
+            //console.log(d.x.label);
+            d.label = d.x.label;
+        });
 
-x.domain(d3.extent(data, function(d) {
-	return d.x;
-}));
-y.domain(d3.extent(data, function(d) {
-	return d.y;
-}));
+        x.domain(d3.extent(data, function(d) {
+            return d.x;
+        }));
 
-svg2.append("g")
-	.attr("class", "x axis")
-	.attr("transform", "translate(0," + height + ")")
-	.call(xAxis)
-	.append("text")
-	.attr("class", "label")
-	.attr("x", width)
-	.attr("y", -6)
-	.style("text-anchor", "end")
-	.style("font", "24px sans-serif")
-	.text("Crime Rate");
+        y.domain(d3.extent(data, function(d) {
+            return d.y;
+        }));
 
-svg2.append("g")
-	.attr("class", "y axis")
-	.call(yAxis)
-	.append("text")
-	.attr("class", "label")
-	.attr("transform", "rotate(-90)")
-	.attr("y", 6)
-	.attr("dy", ".71em")
-	.style("text-anchor", "end")
-	.style("font", "24px sans-serif")
-	.text("Population")
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height/2 + ")")
+            .call(xAxis)
+            .append("text")
+            .attr("class", "label")
+            .attr("x", width)
+            .attr("y", -6)
+            .style("text-anchor", "end")
+            .style("font", "24px sans-serif")
+            .text("Crime Rate");
 
-svg2.selectAll(".dot")
-	.data(data)
-	.enter().append("circle")
-	.attr("class", "dot")
-	.attr("r", 3.5)
-	.attr("cx", function(d) {
-		return x(d.x);
-	})
-	.attr("cy", function(d) {
-		return y(d.y);
-	});
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+            .attr("class", "label")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .style("font", "24px sans-serif")
+            .text("Population");
 
-function create_data(nsamples) {
-	var x = [];
-	var y = [];
-	var n = nsamples;
-	var x_mean = 0;
-	var y_mean = 0;
-	var term1 = 0;
-	var term2 = 0;
-	var noise_factor = 100;
-	var noise = 0;
-	// create x and y values
-	for (var i = 0; i < n; i++) {
-		noise = noise_factor * Math.random();
-		noise *= Math.round(Math.random()) == 1 ? 1 : -1;
-		y.push(i / 5 + noise);
-		x.push(i + 1);
-		x_mean += x[i]
-		y_mean += y[i]
-	}
-	// calculate mean x and y
-	x_mean /= n;
-	y_mean /= n;
+        svg.selectAll(".dot")
+            .data(data)
+            .enter().append("circle")
+            .attr("class", "dot")
+            .attr("r", 3.5)
+            .attr("cx", function(d) {
+                return x(d.x);
+            })
+            .attr("cy", function(d) {
+                return y(d.y);
+            })
+            .on("mouseover", function(d) { console.log(d.label);
+                d3.select(this).attr("fill", d3.rgb(0, 62, 31)); 
+                var coordinates = d3.mouse(this); 
+                focus.select("text").attr("x", coordinates[0]).attr("dy", coordinates[1] - 5).text("some text"); focus.style("display", null);
+            })
+            .on("mouseout", function() {d3.select(this).attr("fill",  d3.rgb(68, 143, 163)); focus.style("display", "none");});
 
-	// calculate coefficients
-	var xr = 0;
-	var yr = 0;
-	for (i = 0; i < x.length; i++) {
-		xr = x[i] - x_mean;
-		yr = y[i] - y_mean;
-		term1 += xr * yr;
-		term2 += xr * xr;
+        var focus = svg.append("g")
+            .attr("class", "focus")
+            .style("fill", "black")
+            .style("display", "none");
+                
+        focus.append("text")
+            .attr("x", 9)
+            .attr("dy", ".35em")
+            .style("text-anchor", "middle");
+    }
 
-	}
-	var b1 = term1 / term2;
-	var b0 = y_mean - (b1 * x_mean);
-	// perform regression 
 
-	yhat = [];
-	// fit line using coeffs
-	for (i = 0; i < x.length; i++) {
-		yhat.push(b0 + (x[i] * b1));
-	}
+    function create_data(data, crime, id) {
+        var x = []; //crime rate
+        var y = []; //population
+        if (typeof id === 'undefined') { 
+            x = getStatesCrimeRate(data, crime);
+            y = getStatesPopulation(data);
+        } else {
+            x = getCountiesCrimeRate(data, id, crime);
+            y = getCountiesPopulation(data, id);
 
-	var data = [];
-	for (i = 0; i < y.length; i++) {
-		data.push({
-			"yhat": yhat[i],
-			"y": y[i],
-			"x": x[i]
-		})
-	}
-	return (data);
-}
+        }
+
+        var dataOut = [];
+        for (i = 0; i < y.length; i++) {
+            dataOut.push({
+                "y": y[i],
+                "x": x[i]
+            })
+        }
+        return dataOut;
+    }
 
 </script>

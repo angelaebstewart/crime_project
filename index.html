@@ -448,7 +448,51 @@ function zoomed() {
         }
         //Nate, add code for updating your chart here.
         function radioOnClick(toggle_val) {
-            updatableChart.data(getCountiesMedianIncome(countyData, "AL")); //this is just in here as dummy data to show how to update the bar chart
+          document.getElementById('scatter').innerHTML = '';
+          var crime;
+          switch(toggle_val) {
+            case "Population":
+              crime = 'overall';
+              break;
+            case "Overall Crime":
+              crime = 'overall';
+              break;
+            case "Violent Crime":
+              crime = 'violent';
+              break;
+            case "Property Crime":
+              crime = 'property';
+              break;
+            case "Burglary":
+              crime = 'burglary';
+              break;
+            case "Larceny-Theft":
+              crime = 'larceny';
+              break;
+            case "Motor Vehicle Theft":
+              crime = 'vehicle';
+              break;
+            case "Murder & Nonnegligent Manslaughter":
+              crime = 'murder';
+              break;
+            case "Rape":
+              crime = 'rape';
+              break;
+            case "Robbery":
+              crime = 'robbery';
+              break;  
+            case "Aggravated Assault":
+              crime = 'assault';
+              break;              
+
+          }
+          if (clicked % 3 == 0) {
+            drawScatter(create_data(nationalData, crime));
+          } else {
+            drawScatter(create_data(countyData, crime, current_state));
+          }
+
+
 	    update_map(toggle_val);
         }
 

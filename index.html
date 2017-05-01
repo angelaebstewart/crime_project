@@ -59,7 +59,9 @@ A panel with radio buttons allows the student to select different data to view o
 <div id="map">
 <!--<h4>Search for a specific county:</h4>
 <div id="map_search" width="960" style="border: solid; border-width: thin; width: 500px;"></div><br/>-->
+
 <div id="map_search" width="960" style="width: 500px;"></div><br/>
+
 <svg id="svg" width="960" height="600"></svg>
 </div>
 <br/><br/>
@@ -67,7 +69,9 @@ A panel with radio buttons allows the student to select different data to view o
 <p>
 The second element of our visualization is a collection of bar charts and a scatterplot showing aggregated information. If a student is zoomed out to the scope of the entire nation, the bar charts show demographic information on sex, race, and median income for the country. The scatterplot displays the relationship between the population and total rate of crime for each state. As stated before, selecting a different type of data in the radio button panel will alter the view presented both in the map and in the scatterplot. The scatterplot will change to a relationship between the population and crime rate of whichever crime type is selected. If the "Population" radio button is selected, the scatterplot returns to its default view.
 <br/><br/>
+
 When the user zooms in a particular state, the bar charts will update to show the demographics for the state selected. For example, if a user zooms in on Indiana with the "Property Crime" radio button selected, the bar charts will show sex and race demographics for the state as well as the median income for all counties in Indiana. The scatterplot will show the relationship between the population and property crime rates of each county in Indiana. 
+
 </div>
 <div id="updatableChart"></div>
 <br/><br/>
@@ -401,7 +405,6 @@ function zoomed() {
               }
 
               nationalData = data;
-              console.log(nationalData);
               
               sexChart = barChart().width(800).height(450).data(getSexData(nationalData, "United States"));
               d3.select('#updatableChart').call(sexChart);
@@ -413,7 +416,7 @@ function zoomed() {
               d3.select('#updatableChart').call(incomeChart);
 
 
-              drawScatter(create_data(nationalData, "violent"));
+              drawScatter(create_data(nationalData, "overall"));
 
 
             });
@@ -538,7 +541,7 @@ function zoomed() {
             .attr("cy", function(d) {
                 return y(d.y);
             })
-            .on("mouseover", function(d) { console.log(d.label);
+            .on("mouseover", function(d) { //console.log(d.label);
                 d3.select(this).attr("fill", d3.rgb(0, 62, 31)); 
                 var coordinates = d3.mouse(this); 
                 focus.select("text").attr("x", coordinates[0]).attr("dy", coordinates[1] - 5).text("some text"); focus.style("display", null);

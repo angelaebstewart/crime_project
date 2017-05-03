@@ -6,7 +6,7 @@ function barChart() {
     var margin = {top:10, right:10, bottom:90, left:100};
     var width = 800 - margin.left - margin.right;
     var height = 450 - margin.top - margin.bottom;
-    var barPadding = 5;
+    var barPadding = 2;
     var fillColor = d3.rgb(68, 143, 163);
     var data = [];
 
@@ -60,14 +60,6 @@ function barChart() {
             
 
 
-            /*svg.append("text")
-                .attr("class", "title")
-                .attr("x", ((width + margin.left + margin.right) / 2))             
-                .attr("y", 30)
-                .attr("text-anchor", "middle")  
-                .style("font", "26px sans-serif")  
-                .text("Demographics Bar Chart");*/
-
             var bars = svg.selectAll('rect.display-bar')
                 .data(data)
                 .enter()
@@ -97,15 +89,6 @@ function barChart() {
 					}
 					});
            
-            /*var focus = svg.append("title")
-                .attr("class", "focus")
-                .style("fill", "black")
-                .style("display", "none");*/
-                
-            /*focus.append("text")
-                .attr("x", 9)
-                .attr("dy", ".35em")
-                .style("text-anchor", "middle");*/
 
             var barText = svg.selectAll('g')
                 .data(data)
@@ -125,12 +108,6 @@ function barChart() {
             
 
 
-
-                //.attr("opacity", .2);
-                //.on("mouseover", function(d) {d3.select(this).attr("fill", "red"); var coordinates = [0, 0]; coordinates = d3.mouse(this); var x = coordinates[0]; var y = coordinates[1]; focus.select("text").attr("x", x).attr("dy", y - 5).text("X: " + x.toString() + ", Y: " + y.toString()); focus.style("display", null);})
-                //.on("mouseout", function() {d3.select(this).attr("fill", "coral"); focus.style("display", "none");});
-
-
             svg.append("g")
                 .attr("class", "y-axis")
                 .attr("transform", "translate(" + margin.left + ",0)")
@@ -138,7 +115,7 @@ function barChart() {
                 .append("text")
                 .attr("class", "label")
                 .attr("x", -height/2 )
-                .attr("y", -50)
+                .attr("y", -75)
                 .attr("transform", "rotate(-90)")       
                 .attr("dy", ".71em")
                 .style("text-anchor", "middle")
@@ -150,14 +127,6 @@ function barChart() {
                 .attr("class", "x-axis")
                 .attr("transform", "translate(" + margin.left + "," + (height) + ")")
                 .call(xAxis);
-                /*.append("text")
-                .attr("class", "label")
-                .attr("x", width)
-                .attr("y", -6)
-                .style("text-anchor", "end")
-                .attr("fill", "black")
-                .style("font", "24px sans-serif")
-                .text("Demographics"); */  
 
 
             updateHeight = function() {
@@ -182,7 +151,6 @@ function barChart() {
             };
 
             updateData = function() {
-                //alert(data[0].label);
                 barSpacing = width / data.length;
                 barWidth = barSpacing - barPadding;
 
@@ -205,8 +173,6 @@ function barChart() {
 
                 var update = svg.selectAll('rect.display-bar')
                     .data(data);
-                    //.on("mouseover", function(d) {d3.select(this).attr("fill", "red"); var coordinates = [0, 0]; coordinates = d3.mouse(this); var x = coordinates[0]; var y = coordinates[1]; focus.select("text").attr("x", x).attr("dy", y - 5).text("X: " + x.toString() + ", Y: " + y.toString()); focus.style("display", null);})
-                    //.on("mouseout", function() {d3.select(this).attr("fill", "coral"); focus.style("display", "none");});
 
                 var updateBarText = svg.selectAll('.bar-label')
                     .data(data);
@@ -261,6 +227,8 @@ function barChart() {
                     .attr('width', barWidth)
                     .attr('y', function(d) { return height - (d.value * heightScale);})
                     .attr('height', 0)
+                    .on("mouseover", function(d) {d3.select(this).attr("fill", d3.rgb(0, 62, 31))})
+                    .on("mouseout", function(d) {d3.select(this).attr("fill", d3.rgb(68, 143, 163))})
                     .style('opacity', 0)
                     .transition()
                     .duration(1000)

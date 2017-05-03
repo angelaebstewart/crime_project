@@ -35,7 +35,7 @@ Holding the mouse over a county will show a tooltip with information about the c
 <br/><br/>
 Task 1: Find the rate of property crime of your home county.
 <br/>
-Task 2: Find how much more/less violent crime per capita is committed in Texas than Hawaii.
+Task 2: Find how much more/less violent crime  per 100,000 is committed in Texas than Hawaii.
 <br/>
 Task 3: Find 3 states that have high rates of burglary.
 </div>
@@ -365,7 +365,7 @@ function ready(error, us) {
     .append("title")
       .text(function(d) { var info = ""; var data = json[heatmap.get(d.id)];
 		if(d.value != null && d.value != -1) {info = data.county + ", " + data.state + "\n\nPopulation: " + data.population;
-                    if(data.active != data.population) { info = info + "\n" + active_data + ": " + (Number(data.active)).toFixed(2) + " per capita"; }
+                    if(data.active != data.population) { info = info + "\n" + active_data + ": " + (Number(data.active)).toFixed(2) + "  per 100,000"; }
                     info = info + "\n\nMale: " + (Number(data.male) * 100).toFixed(2) + "%\nFemale: " + (Number(data.female) * 100).toFixed(2) + "%\n\nAsian: " + (Number(data.asian) * 100).toFixed(2) + "%\nBlack: " + (Number(data.black) * 100).toFixed(2) + "%\nHawaiian or Pacific Islander: " + (Number(data.hawaiian) * 100).toFixed(2) + "%\nNative American: " + (Number(data.aboriginal) * 100).toFixed(2) + "%\nWhite: " + (Number(data.white) * 100).toFixed(2) + "%\nMultiracial: " + (Number(data.multiple) * 100).toFixed(2) + "%\nOther: " + (Number(data.other) * 100).toFixed(2) + "%"; 
                     return info;
                 }

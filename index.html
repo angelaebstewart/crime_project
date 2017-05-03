@@ -615,13 +615,6 @@ function zoomed() {
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height/2 + ")")
             .call(xAxis);
-            /*.append("text")
-            .attr("class", "label")
-            .attr("x", width)
-            .attr("y", -6)
-            .style("text-anchor", "end")
-            .style("font", "24px sans-serif")
-            .text("Crime Rate");*/
 
         svg.append("g")
             .attr("class", "y axis")
@@ -637,7 +630,7 @@ function zoomed() {
         svg.append("text")
           .attr("transform", "rotate(-90)")
           .attr("x", -height/2)
-          .attr("y", -5)
+          .attr("y", -15)
           .style("text-anchor", "middle")
           .attr("fill", "black")
           .style("font", "24px sans-serif")
@@ -687,8 +680,6 @@ function zoomed() {
 
             })
         }
-
-        console.log(dataOut);
 
         return dataOut;
     }

@@ -13,10 +13,7 @@
   stroke-linejoin: round;
 }
 
-.dot {
-    stroke: #448fa3;
-    fill: #448fa3;
-}
+
 
 </style>
 <div id="tutorial" style="float: left;">
@@ -395,7 +392,7 @@ function context_change(race, sex, income, state_selected) {
   sex.data(getSexData(nationalData, state_selected));
   income.data(getCountiesMedianIncome(countyData, state_selected));
   document.getElementById('scatter').innerHTML = '';
-  drawScatter(create_data(countyData, "overall", state_selected));
+  drawScatter(create_data(countyData, "overall", state_selected), "overall");
 
 
     return 0;
@@ -450,7 +447,7 @@ function zoomed() {
               d3.select('#updatableChart').call(incomeChart);
 
 
-              drawScatter(create_data(nationalData, "overall"));
+              drawScatter(create_data(nationalData, "overall"), "overall");
 
 
             });
@@ -519,9 +516,9 @@ function zoomed() {
 
           }
           if (clicked % 3 == 0) {
-            drawScatter(create_data(nationalData, crime));
+            drawScatter(create_data(nationalData, crime), crime);
           } else {
-            drawScatter(create_data(countyData, crime, current_state));
+            drawScatter(create_data(countyData, crime, current_state), crime);
           }
 
 
@@ -529,11 +526,48 @@ function zoomed() {
         }
 
 //SCATTERPLOT
-    function drawScatter(data) {
+    function drawScatter(data, crimeString) {
+      var crimeTitle;
+
+      switch(crimeString) {
+        case "overall":
+          crimeTitle = 'Overall';
+          break;
+        case "violent":
+          crimeTitle = 'Violent';
+          break;
+        case "property":
+          crimeTitle = 'Property';
+          break;
+        case "burglary":
+          crimeTitle = 'Burglary';
+          break;
+        case "larceny":
+          crimeTitle = 'Larceny-Theft';
+          break;
+        case "vehicle":
+          crimeTitle = 'Motor Vehicle Theft';
+          break;
+        case "murder":
+          crimeTitle = 'Murder & Nonnegligent Manslaughter';
+          break;
+        case "rape":
+          crimeTitle = 'Rape';
+          break;
+        case "robbery":
+          crimeTitle = 'Robbery';
+          break;  
+        case "assault":
+          crimeTitle = 'Aggravated Assault';
+          break;              
+
+      }
+
+
         var margin = {
             top: 20,
             right: 20,
-            bottom: 30,
+            bottom: 50,
             left: 40
         },
         
@@ -580,25 +614,25 @@ function zoomed() {
         svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height/2 + ")")
-            .call(xAxis)
-            .append("text")
+            .call(xAxis);
+            /*.append("text")
             .attr("class", "label")
             .attr("x", width)
             .attr("y", -6)
             .style("text-anchor", "end")
             .style("font", "24px sans-serif")
-            .text("Crime Rate");
+            .text("Crime Rate");*/
 
         svg.append("g")
             .attr("class", "y axis")
             .call(yAxis);
 
         svg.append("text")
-          .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom) + ")")
+          .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom - 5)  + ")")
           .style("text-anchor", "middle")
           .attr("fill", "black")
           .style("font", "24px sans-serif")
-          .text("Crime Rate");
+          .text(crimeTitle + " Crime Rate");
 
         svg.append("text")
           .attr("transform", "rotate(-90)")
@@ -609,23 +643,6 @@ function zoomed() {
           .style("font", "24px sans-serif")
           .text("Population");
 
-        /*svg.append("text")
-          .attr("transform", "rotate(-90)")
-          .attr("y", 0 – margin.left)
-          .attr("x",0 - (height / 2))
-          .attr("dy", "1em")
-          .style("text-anchor", "middle")
-          .text("Value");*/
-            /*
-            .append("text")
-            .attr("class", "label")
-            //.attr("transform", "rotate(-90)")
-            //.attr("y", 10)
-            //.attr("x", 10)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .style("font", "24px sans-serif")
-            .text("Population");*/
 
         svg.selectAll(".dot")
             .data(data)
@@ -637,23 +654,14 @@ function zoomed() {
             })
             .attr("cy", function(d) {
                 return y(d.y);
-            });
-            /*.on("mouseover", function(d) { //console.log(d.label);
-                d3.select(this).attr("fill", d3.rgb(0, 62, 31)); 
-                var coordinates = d3.mouse(this); 
-                focus.select("text").attr("x", coordinates[0]).attr("dy", coordinates[1] - 5).text("some text"); focus.style("display", null);
             })
-            .on("mouseout", function() {d3.select(this).attr("fill",  d3.rgb(68, 143, 163)); focus.style("display", "none");});*/
-
-        /*var focus = svg.append("g")
-            .attr("class", "focus")
-            .style("fill", "black")
-            .style("display", "none");
-                
-        focus.append("text")
-            .attr("x", 9)
-            .attr("dy", ".35em")
-            .style("text-anchor", "middle");*/
+            .attr("fill", d3.rgb(68, 143, 163))
+            .on("mouseover", function(d) {d3.select(this).attr("fill", d3.rgb(0, 62, 31))})
+                .on("mouseout", function(d) {d3.select(this).attr("fill", d3.rgb(68, 143, 163))})
+            .append('title')
+                .attr('class', 'tooltip')
+                .text(function (d) { return d.xlabel + "\nPopulation: " + d.y.toLocaleString() + "\nCrime Rate: " + d.x.toLocaleString(undefined, {maximumFractionDigits:2}) + " per 100K";          });
+            
     }
 
 
@@ -664,7 +672,6 @@ function zoomed() {
             x = getStatesCrimeRate(data, crime);
             y = getStatesPopulation(data);
         } else {
-            console.log("in else");
             x = getCountiesCrimeRate(data, id, crime);
             y = getCountiesPopulation(data, id);
 
@@ -674,9 +681,15 @@ function zoomed() {
         for (i = 0; i < y.length; i++) {
             dataOut.push({
                 "y": y[i],
-                "x": x[i]
+                "x": x[i],
+                "xlabel" : x[i]["label"],
+                "ylabel" : y[i]["label"]
+
             })
         }
+
+        console.log(dataOut);
+
         return dataOut;
     }
 

@@ -63,10 +63,10 @@ A panel with radio buttons allows the student to select different data to view o
 </p>
 </div>
 <div id="map">
-<!--<h4>Search for a specific county:</h4>
-<div id="map_search" width="960" style="border: solid; border-width: thin; width: 500px;"></div><br/>-->
+<h4>Search for a specific county:</h4>
+<div id="map_search" width="960" style="border: solid; border-width: thin; width: 500px;"></div><br/>
 
-<div id="map_search" width="960" style="width: 500px;"></div><br/>
+<!--<div id="map_search" width="960" style="width: 500px;"></div><br/>-->
 
 <svg id="svg" width="960" height="600"></svg>
 </div>
@@ -160,22 +160,22 @@ var zoom = d3.zoom()
 var json = [];
 var acc = 0;
 
-/*var map_div = document.getElementById("map_search");
+var map_div = document.getElementById("map_search");
 var searchbox = completely(map_div);
 searchbox.options = [];
-//var search_div = document.getElementById("map_search").firstChild.firstChild.innerHTML;
+var search_div = document.getElementById("map_search").firstChild.firstChild.innerHTML;
 var text_div = document.querySelectorAll('[style="position: absolute; visibility: hidden; outline: 0px none; margin: 0px; padding: 0px; text-align: left; font-size: 16px; font-family: sans-serif; background-color: rgb(255, 255, 255); z-index: 100; cursor: default; border-style: solid; border-width: 1px; border-color: rgb(170, 170, 170); overflow-x: hidden; white-space: pre; overflow-y: scroll;"]')[0];
 text_div.setAttribute("id", "county_selector");
 var search_div = document.querySelectorAll('[spellcheck="false"]')[1];
-search_div.setAttribute("onKeydown", "Javascript: if (event.keyCode==13) alert(document.getElementById(\"county_selector\").innerHTML);");
-*/
+search_div.setAttribute("onKeydown", "Javascript: if (event.keyCode==13) { var query = document.getElementById(\"county_selector\").firstChild.innerHTML; var el = query.split('<')[0]; alert(document.getElementById(el)); }");
+
 d3.queue()
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
     .defer(d3.csv, "data2.csv", function(d) {
                   if(d.geoid < 10000) { d.geoid = "0" + d.geoid; }
                   if(d.violent != null && d.violent != "-1" && d.property != null && d.property != "-1") { d.overall = Number(d.violent) + Number(d.property); } else { d.overall = -1; }
 		  json.push({"geoid": d.geoid, "county": d.county, "state": d.state, "population": d.population, "male": d.male, "female": d.female, "other": d.other, "asian": d.asian, "black": d.black, "hawaiian": d.hawaiian, "aboriginal": d.aboriginal, "multiple": d.multiple, "white": d.white, "violent": d.violent, "property": d.property, "murder": d.murder, "rape": d.rape, "robbery": d.robbery, "assault": d.assault, "burglary": d.burglary, "larceny": d.larceny, "motor": d.vehicle, "overall": d.overall, "active": d.population});
-		  //searchbox.options.push(d.county + ", " + d.state);
+		  searchbox.options.push(d.county + ", " + d.state);
                   if(parseInt(d.population) > max) { max = parseInt(d.population); } if(parseInt(d.population) < min && parseInt(d.population) != -1) { min = parseInt(d.population); } heatmap.set(d.geoid, +acc);
                   acc++;
 		})

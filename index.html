@@ -143,6 +143,7 @@ var svg = d3.select("#svg"),
 var clicked = 0;
 var current_state;
 var selected = "";
+var searched_county = "";
 
 var max = 0;
 
@@ -166,8 +167,9 @@ searchbox.options = [];
 var search_div = document.getElementById("map_search").firstChild.firstChild.innerHTML;
 var text_div = document.querySelectorAll('[style="position: absolute; visibility: hidden; outline: 0px none; margin: 0px; padding: 0px; text-align: left; font-size: 16px; font-family: sans-serif; background-color: rgb(255, 255, 255); z-index: 100; cursor: default; border-style: solid; border-width: 1px; border-color: rgb(170, 170, 170); overflow-x: hidden; white-space: pre; overflow-y: scroll;"]')[0];
 text_div.setAttribute("id", "county_selector");
+
 var search_div = document.querySelectorAll('[spellcheck="false"]')[1];
-search_div.setAttribute("onKeydown", "Javascript: if (event.keyCode==13) { var query = document.getElementById(\"county_selector\").firstChild.innerHTML; var el = query.split('<')[0]; alert(document.getElementById(el)); }");
+search_div.setAttribute("onKeydown", "Javascript: if (event.keyCode==13) { var query = document.getElementById(\"county_selector\").firstChild.innerHTML; var el = query.split('<')[0]; el = document.getElementById(el); var curr = document.getElementById(\"selected\"); if(curr != null) { curr.setAttribute(\"fill\", selected); curr.setAttribute(\"id\", searched_county); } searched_county = el.getAttribute(\"id\"); el.setAttribute(\"id\", \"selected\"); selected = el.getAttribute(\"fill\"); el.setAttribute(\"fill\", \"yellow\"); county_highlight(el.id); }");
 
 d3.queue()
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
@@ -300,7 +302,7 @@ function update_ticks() {
     var ticks = document.getElementsByClassName("tick");
     for(var t = 0; t < ticks.length; t++) {
 		if(ticks[t].parentNode.parentNode.id == "svg") {
-			console.log(ticks[t]);
+			//console.log(ticks[t]);
         	if(t == 0) { ticks[t].innerHTML = "<line stroke=\"#000\" y2=\"13\" x1=\"0.5\" x2=\"0.5\"></line><text fill=\"#000\" y=\"16\" x=\"0.5\" dx=\"1.5em\" dy=\"1em\" transform=\"rotate(30)\">" + min + "</text>"; }
         	else { ticks[t].innerHTML = "<line stroke=\"#000\" y2=\"13\" x1=\"0.5\" x2=\"0.5\"></line><text fill=\"#000\" y=\"16\" x=\"0.5\" dx=\"1.5em\" dy=\"1em\" transform=\"rotate(30)\">" + Math.ceil(max * ((t + 1.0) / 9.0)) + "</text>"; }
     	}
@@ -327,21 +329,20 @@ function ready(error, us) {
       .attr("fill", function(d) { var v = heatmap.get(d.id); 
           if(json[v] != null) { d.value = Number(json[v].active); d.properties = json[v]; } 
           if(d.value != null && d.value != -1) { return color(((d.value * 1.0) / (max * 1.0)) * 90); } else { return "grey"; }})
-	  //.on("mouseover", function(d) { selected = d.id; })
 	  .on("click", function(d) { var obj = d3.select(this);
 	    if(obj.attr("fill") == "yellow") {
-                obj.attr("id", "");
-	        obj.attr("fill", function (d) { 
+                obj.attr("id", searched_county);
+	        obj.attr("fill", function (d) {
 		if(d.value != null && d.value != -1) {
-		  return color(((d.value * 1.0) / (max * 1.0)) * 90); 
+		  return color(((d.value * 1.0) / (max * 1.0)) * 90);
 		} 
 		else { return "grey"; } 
 		}); }
-	    else { 
-                var curr = document.getElementById("selected"); 
-                if(curr != null) { curr.setAttribute("fill", selected); curr.setAttribute("id", ""); }
-                obj.attr("id", "selected"); selected = d3.select(this).attr("fill"); d3.select(this).attr("fill", "yellow"); 
-                county_highlight(d.id, incomeChart);
+	    else {
+                var curr = document.getElementById("selected");
+                if(curr != null) { curr.setAttribute("fill", selected); curr.setAttribute("id", searched_county); }
+                searched_county = obj.attr("id"); obj.attr("id", "selected"); selected = d3.select(this).attr("fill"); d3.select(this).attr("fill", "yellow"); 
+                county_highlight(d.id);
             }})
 	  .on("dblclick", function(d) { clicked++;
               if(clicked % 3 != 0) {

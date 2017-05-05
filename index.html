@@ -35,7 +35,7 @@ Holding the mouse over a county will show a tooltip with information about the c
 <br/><br/>
 Task 1: Find the rate of property crime of your home county.
 <br/>
-Task 2: Find how much more/less violent crime per capita is committed in Texas than Hawaii.
+Task 2: Find how much more/less violent crime  per 100,000 is committed in Texas than Hawaii.
 <br/>
 Task 3: Find 3 states that have high rates of burglary.
 </div>
@@ -63,10 +63,10 @@ A panel with radio buttons allows the student to select different data to view o
 </p>
 </div>
 <div id="map">
-<!--<h4>Search for a specific county:</h4>
-<div id="map_search" width="960" style="border: solid; border-width: thin; width: 500px;"></div><br/>-->
+<h4>Search for a specific county:</h4>
+<div id="map_search" width="960" style="border: solid; border-width: thin; width: 500px;"></div><br/>
 
-<div id="map_search" width="960" style="width: 500px;"></div><br/>
+<!--<div id="map_search" width="960" style="width: 500px;"></div><br/>-->
 
 <svg id="svg" width="960" height="600"></svg>
 </div>
@@ -160,22 +160,22 @@ var zoom = d3.zoom()
 var json = [];
 var acc = 0;
 
-/*var map_div = document.getElementById("map_search");
+var map_div = document.getElementById("map_search");
 var searchbox = completely(map_div);
 searchbox.options = [];
-//var search_div = document.getElementById("map_search").firstChild.firstChild.innerHTML;
+var search_div = document.getElementById("map_search").firstChild.firstChild.innerHTML;
 var text_div = document.querySelectorAll('[style="position: absolute; visibility: hidden; outline: 0px none; margin: 0px; padding: 0px; text-align: left; font-size: 16px; font-family: sans-serif; background-color: rgb(255, 255, 255); z-index: 100; cursor: default; border-style: solid; border-width: 1px; border-color: rgb(170, 170, 170); overflow-x: hidden; white-space: pre; overflow-y: scroll;"]')[0];
 text_div.setAttribute("id", "county_selector");
 var search_div = document.querySelectorAll('[spellcheck="false"]')[1];
-search_div.setAttribute("onKeydown", "Javascript: if (event.keyCode==13) alert(document.getElementById(\"county_selector\").innerHTML);");
-*/
+search_div.setAttribute("onKeydown", "Javascript: if (event.keyCode==13) { var query = document.getElementById(\"county_selector\").firstChild.innerHTML; var el = query.split('<')[0]; alert(document.getElementById(el)); }");
+
 d3.queue()
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
     .defer(d3.csv, "data2.csv", function(d) {
                   if(d.geoid < 10000) { d.geoid = "0" + d.geoid; }
                   if(d.violent != null && d.violent != "-1" && d.property != null && d.property != "-1") { d.overall = Number(d.violent) + Number(d.property); } else { d.overall = -1; }
 		  json.push({"geoid": d.geoid, "county": d.county, "state": d.state, "population": d.population, "male": d.male, "female": d.female, "other": d.other, "asian": d.asian, "black": d.black, "hawaiian": d.hawaiian, "aboriginal": d.aboriginal, "multiple": d.multiple, "white": d.white, "violent": d.violent, "property": d.property, "murder": d.murder, "rape": d.rape, "robbery": d.robbery, "assault": d.assault, "burglary": d.burglary, "larceny": d.larceny, "motor": d.vehicle, "overall": d.overall, "active": d.population});
-		  //searchbox.options.push(d.county + ", " + d.state);
+		  searchbox.options.push(d.county + ", " + d.state);
                   if(parseInt(d.population) > max) { max = parseInt(d.population); } if(parseInt(d.population) < min && parseInt(d.population) != -1) { min = parseInt(d.population); } heatmap.set(d.geoid, +acc);
                   acc++;
 		})
@@ -341,13 +341,13 @@ function ready(error, us) {
                 var curr = document.getElementById("selected"); 
                 if(curr != null) { curr.setAttribute("fill", selected); curr.setAttribute("id", ""); }
                 obj.attr("id", "selected"); selected = d3.select(this).attr("fill"); d3.select(this).attr("fill", "yellow"); 
-                county_highlight(d.id);
+                county_highlight(d.id, incomeChart);
             }})
 	  .on("dblclick", function(d) { clicked++;
               if(clicked % 3 != 0) {
                   var data = json[heatmap.get(d.id)];
 				  current_state = data.state;
-                  context_change(raceChart, sexChart, incomeChart, data.state);
+                  context_change(raceChart, incomeChart, data.state);
               }
               //var state;
 		/*for(var j = 0; j < json.length; j++) { 
@@ -365,7 +365,7 @@ function ready(error, us) {
     .append("title")
       .text(function(d) { var info = ""; var data = json[heatmap.get(d.id)];
 		if(d.value != null && d.value != -1) {info = data.county + ", " + data.state + "\n\nPopulation: " + data.population;
-                    if(data.active != data.population) { info = info + "\n" + active_data + ": " + (Number(data.active)).toFixed(2) + " per capita"; }
+                    if(data.active != data.population) { info = info + "\n" + active_data + ": " + (Number(data.active)).toFixed(2) + "  per 100,000"; }
                     info = info + "\n\nMale: " + (Number(data.male) * 100).toFixed(2) + "%\nFemale: " + (Number(data.female) * 100).toFixed(2) + "%\n\nAsian: " + (Number(data.asian) * 100).toFixed(2) + "%\nBlack: " + (Number(data.black) * 100).toFixed(2) + "%\nHawaiian or Pacific Islander: " + (Number(data.hawaiian) * 100).toFixed(2) + "%\nNative American: " + (Number(data.aboriginal) * 100).toFixed(2) + "%\nWhite: " + (Number(data.white) * 100).toFixed(2) + "%\nMultiracial: " + (Number(data.multiple) * 100).toFixed(2) + "%\nOther: " + (Number(data.other) * 100).toFixed(2) + "%"; 
                     return info;
                 }
@@ -387,9 +387,9 @@ function ready(error, us) {
       .attr("d", path);
 }
 
-function context_change(race, sex, income, state_selected) {
+function context_change(race, income, state_selected) {
   race.data(getRaceData(nationalData, state_selected));
-  sex.data(getSexData(nationalData, state_selected));
+  //sex.data(getSexData(nationalData, state_selected));
   income.data(getCountiesMedianIncome(countyData, state_selected));
   document.getElementById('scatter').innerHTML = '';
   drawScatter(create_data(countyData, "overall", state_selected), "overall");
@@ -399,8 +399,8 @@ function context_change(race, sex, income, state_selected) {
 }
 
 function county_highlight(geoid, income) {
-  //console.log("county highlight");
-  //income.highlightBar(geoid);
+  //console.log('bar_' + geoid);
+  income.highlightBar("bar_" + geoid);
     return 0;
 }
 
@@ -416,7 +416,7 @@ function zoomed() {
         //BAR AND SCATTER
         var countyData = [];
         var nationalData = [];
-        var sexChart;
+        //var sexChart;
         var raceChart;
         var incomeChart;
         var crimeChart;
@@ -437,13 +437,13 @@ function zoomed() {
 
               nationalData = data;
               
-              sexChart = barChart().width(800).height(450).data(getSexData(nationalData, "United States"));
-              d3.select('#updatableChart').call(sexChart);
+              //sexChart = barChart().width(800).height(450).data(getSexData(nationalData, "United States"));
+              //d3.select('#updatableChart').call(sexChart);
 
-              raceChart = barChart().width(800).height(450).data(getRaceData(nationalData, "United States"));
+              raceChart = barChart().width(650).height(300).data(getRaceData(nationalData, "United States"));
               d3.select('#updatableChart').call(raceChart);
 
-              incomeChart = barChart().width(800).height(450).data(getStatesMedianIncome(nationalData));
+              incomeChart = barChart().width(650).height(300).data(getStatesMedianIncome(nationalData));
               d3.select('#updatableChart').call(incomeChart);
 
 
@@ -571,8 +571,8 @@ function zoomed() {
             left: 40
         },
         
-        width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+        width = 650 - margin.left - margin.right,
+        height = 300 - margin.top - margin.bottom;
         
         var x = d3.scaleLinear()
             .range([0, width]);
@@ -652,8 +652,24 @@ function zoomed() {
             .on("mouseover", function(d) {d3.select(this).attr("fill", d3.rgb(0, 62, 31))})
                 .on("mouseout", function(d) {d3.select(this).attr("fill", d3.rgb(68, 143, 163))})
             .append('title')
-                .attr('class', 'tooltip')
-                .text(function (d) { return d.xlabel + "\nPopulation: " + d.y.toLocaleString() + "\nCrime Rate: " + d.x.toLocaleString(undefined, {maximumFractionDigits:2}) + " per 100K";          });
+            .attr('class', 'tooltip')
+            .text(function (d) { 
+                  var crimeString = "";
+                  var popString = "";
+                  if (d.x < 0) {
+                    crimeString = "No data available";
+                  } else {
+                    crimeString = d.x.toLocaleString(undefined, {maximumFractionDigits:2}) + " per 100K"
+                  }
+
+                  if (d.y < 0) {
+
+                  } else {
+                    popString = d.y.toLocaleString();
+                  }
+
+                  return d.xlabel + "\nPopulation: " + popString + "\nCrime Rate: " + crimeString;          
+                });
             
     }
 

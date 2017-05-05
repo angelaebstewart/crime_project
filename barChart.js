@@ -121,12 +121,21 @@ function barChart() {
                 .style("text-anchor", "middle")
                 .attr("fill", "black")
                 .style("font", "24px sans-serif")
-                .text(function() { if(charts_charted % 3 == 0) { return "US Dollars"; } else { return "Percent"; } });
+                .text(function() { if(charts_charted % 2 == 0) { return "US Dollars"; } else { return "Percent"; } });
 
             svg.append("g")
                 .attr("class", "x-axis")
                 .attr("transform", "translate(" + margin.left + "," + (height) + ")")
-                .call(xAxis);
+                .call(xAxis)
+                .append("text")
+                .attr("class", "label")
+                .attr("x", width/2 )
+                .attr("y", -height)
+                .attr("dy", ".71em")
+                .style("text-anchor", "middle")
+                .attr("fill", "black")
+                .style("font", "24px sans-serif")
+                .text(function() { if(charts_charted % 2 == 0) { return "Median Incomes"; } else { return null; } });
 
 
             updateHeight = function() {
@@ -203,7 +212,15 @@ function barChart() {
                     .attr('x', function(d, i) {return (i * barSpacing) + margin.left + barPadding;})
                     .attr('width', barWidth)
                     .attr('y', function(d) { return height - (d.value * heightScale);}) //WAS 0
-                    .attr('height', function(d) { return d.value * heightScale; });
+                    .attr('height', function(d) { return d.value * heightScale; })
+                    .attr("id", function(d,i) {
+                        if( typeof d.geoid !== 'undefined' ) {
+                            //console.log(d.geoid);
+                            return 'bar_' + d.geoid;} else {
+                                return 'bar_' + i;
+                            }
+                        })
+                    .style("fill", d3.rgb(68, 143, 163));
 
                 updateToolTips.text(function (d) {
                     if(d.value < 10) {
@@ -318,9 +335,30 @@ function barChart() {
     };
 
     chart.highlightBar = function(barID) {
-        var selectedBar = d3.select("#" + barID);
-        selectedBar.transition().duration(1000).style('fill', d3.rgb(186, 45, 11));
+        //console.log("#" + barID);
+        var selectedBar = d3.selectAll("#" + barID);
+        console.log(selectedBar.empty());
+        setTimeout(function() {
+            selectedBar = d3.selectAll("#" + barID);
+            selectedBar.transition().duration(1000).style("fill", d3.rgb(186, 45, 11));
+        }, 5000);
+
+        return chart;
     };
+
+    /*chart.xTitle = function(xText) {
+        svg.selectAll(".x-axis")
+                .append("text")
+                .attr("class", "label")
+                .attr("x", width/2 )
+                .attr("y", height)
+                .attr("dy", ".71em")
+                .style("text-anchor", "middle")
+                .attr("fill", "black")
+                .style("font", "24px sans-serif")
+                .text(xText);
+        return chart;
+    };*/
 
     return chart;
 }
